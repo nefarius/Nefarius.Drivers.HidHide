@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Nefarius.Drivers.HidHide;
+namespace Nefarius.Drivers.HidHide.Util;
 
 /// <summary>
 ///     String manipulation helper methods.
