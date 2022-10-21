@@ -23,7 +23,10 @@ public static class MultiSzHelper
         IEnumerable<byte> multiSz = new List<byte>();
 
         // Convert each string into wide multi-byte and add NULL-terminator in between
-        multiSz = instances.Aggregate(multiSz,
+        multiSz = instances
+            /* skip invalid entries */
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Aggregate(multiSz,
             (current, entry) => current.Concat(Encoding.Unicode.GetBytes(entry))
                 .Concat(Encoding.Unicode.GetBytes(new[] { char.MinValue })));
 
