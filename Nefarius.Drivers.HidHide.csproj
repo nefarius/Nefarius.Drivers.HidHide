@@ -14,6 +14,7 @@
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/nefarius/Nefarius.Drivers.HidHide</RepositoryUrl>
     <PackageProjectUrl>https://github.com/nefarius/Nefarius.Drivers.HidHide</PackageProjectUrl>
+    <Description>Managed API for configuring HidHide.</Description>
   </PropertyGroup>
 
   <ItemGroup>
