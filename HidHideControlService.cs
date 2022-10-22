@@ -19,6 +19,11 @@ public interface IHidHideControlService
     bool IsActive { get; set; }
 
     /// <summary>
+    ///     Gets or sets whether the application list is inverted (from block all/allow specific to allow all/block specific).
+    /// </summary>
+    bool IsAppListInverted { get; set; }
+
+    /// <summary>
     ///     Returns list of currently blocked instance IDs.
     /// </summary>
     IEnumerable<string> BlockedInstanceIds { get; }
@@ -137,6 +142,67 @@ public sealed class HidHideControlService : IHidHideControlService
             PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetActive,
+                buffer,
+                (uint)bufferLength,
+                null,
+                0,
+                null,
+                null
+            );
+        }
+    }
+
+    /// <inheritdoc />
+    public unsafe bool IsAppListInverted 
+    {
+        get
+        {
+            using var handle = PInvoke.CreateFile(
+                ControlDeviceFilename,
+                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
+                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                null,
+                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
+                null
+            );
+
+            var bufferLength = Marshal.SizeOf<bool>();
+            var buffer = stackalloc byte[bufferLength];
+
+            PInvoke.DeviceIoControl(
+                handle,
+                IoctlGetWlInverse,
+                buffer,
+                (uint)bufferLength,
+                buffer,
+                (uint)bufferLength,
+                null,
+                null
+            );
+
+            return buffer[0] > 0;
+        }
+        set
+        {
+            using var handle = PInvoke.CreateFile(
+                ControlDeviceFilename,
+                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
+                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                null,
+                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
+                null
+            );
+
+            var bufferLength = Marshal.SizeOf<bool>();
+            var buffer = stackalloc byte[bufferLength];
+
+            buffer[0] = value ? (byte)1 : (byte)0;
+
+            PInvoke.DeviceIoControl(
+                handle,
+                IoctlSetWlInverse,
                 buffer,
                 (uint)bufferLength,
                 null,
