@@ -88,28 +88,28 @@ public sealed class HidHideControlService : IHidHideControlService
     private const string ControlDeviceFilename = "\\\\.\\HidHide";
 
     private static readonly uint IoctlGetWhitelist =
-        CTL_CODE(IoControlDeviceType, 2048, PInvoke.METHOD_BUFFERED, PInvoke.FILE_READ_ACCESS);
+        CTL_CODE(IoControlDeviceType, 2048, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
     private static readonly uint IoctlSetWhitelist =
-        CTL_CODE(IoControlDeviceType, 2049, PInvoke.METHOD_BUFFERED, PInvoke.FILE_READ_ACCESS);
+        CTL_CODE(IoControlDeviceType, 2049, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
     private static readonly uint IoctlGetBlacklist =
-        CTL_CODE(IoControlDeviceType, 2050, PInvoke.METHOD_BUFFERED, PInvoke.FILE_READ_ACCESS);
+        CTL_CODE(IoControlDeviceType, 2050, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
     private static readonly uint IoctlSetBlacklist =
-        CTL_CODE(IoControlDeviceType, 2051, PInvoke.METHOD_BUFFERED, PInvoke.FILE_READ_ACCESS);
+        CTL_CODE(IoControlDeviceType, 2051, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
     private static readonly uint IoctlGetActive =
-        CTL_CODE(IoControlDeviceType, 2052, PInvoke.METHOD_BUFFERED, PInvoke.FILE_READ_ACCESS);
+        CTL_CODE(IoControlDeviceType, 2052, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
     private static readonly uint IoctlSetActive =
-        CTL_CODE(IoControlDeviceType, 2053, PInvoke.METHOD_BUFFERED, PInvoke.FILE_READ_ACCESS);
+        CTL_CODE(IoControlDeviceType, 2053, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
     private static readonly uint IoctlGetWlInverse =
-        CTL_CODE(IoControlDeviceType, 2054, PInvoke.METHOD_BUFFERED, PInvoke.FILE_READ_ACCESS);
+        CTL_CODE(IoControlDeviceType, 2054, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
     private static readonly uint IoctlSetWlInverse =
-        CTL_CODE(IoControlDeviceType, 2055, PInvoke.METHOD_BUFFERED, PInvoke.FILE_READ_ACCESS);
+        CTL_CODE(IoControlDeviceType, 2055, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
     /// <inheritdoc />
     public unsafe bool IsActive
@@ -607,8 +607,8 @@ public sealed class HidHideControlService : IHidHideControlService
         }
     }
 
-    private static UInt32 CTL_CODE(uint deviceType, uint function, uint method, uint access)
+    private static UInt32 CTL_CODE(uint deviceType, uint function, uint method, FILE_ACCESS_FLAGS access)
     {
-        return (deviceType << 16) | (access << 14) | (function << 2) | method;
+        return (deviceType << 16) | ((uint)access << 14) | (function << 2) | method;
     }
 }
