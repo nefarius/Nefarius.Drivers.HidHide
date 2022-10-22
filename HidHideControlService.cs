@@ -29,9 +29,9 @@ public interface IHidHideControlService
     IEnumerable<string> BlockedInstanceIds { get; }
 
     /// <summary>
-    ///     Returns list of currently allowed application paths.
+    ///     Returns list of currently allowed (or blocked, see <see cref="IsAppListInverted" />) application paths.
     /// </summary>
-    IEnumerable<string> AllowedApplicationPaths { get; }
+    IEnumerable<string> ApplicationPaths { get; }
 
     /// <summary>
     ///     Submit a new instance to block.
@@ -273,7 +273,7 @@ public sealed class HidHideControlService : IHidHideControlService
     }
 
     /// <inheritdoc />
-    public unsafe IEnumerable<string> AllowedApplicationPaths
+    public unsafe IEnumerable<string> ApplicationPaths
     {
         get
         {
@@ -433,7 +433,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            buffer = AllowedApplicationPaths
+            buffer = ApplicationPaths
                 .Concat(new[] // Add our own instance paths to the existing list
                 {
                     VolumeHelper.PathToDosDevicePath(path)
@@ -477,7 +477,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            buffer = AllowedApplicationPaths
+            buffer = ApplicationPaths
                 .Where(i => !i.Equals(VolumeHelper.PathToDosDevicePath(path), StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
