@@ -58,6 +58,24 @@ public interface IHidHideControlService
     void RemoveApplicationPath(string path);
 }
 
+public class HidHideException : Exception
+{
+    public HidHideException()
+    {
+    }
+
+    public HidHideException(string message) : base(message)
+    {
+    }
+
+    public HidHideException(string message, int errorCode) : this(message)
+    {
+        NativeErrorCode = errorCode;
+    }
+
+    private int NativeErrorCode { get; }
+}
+
 /// <summary>
 ///     Provides a managed wrapper for communicating with HidHide driver.
 /// </summary>
@@ -106,10 +124,15 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
             var bufferLength = Marshal.SizeOf<bool>();
             var buffer = stackalloc byte[bufferLength];
 
-            PInvoke.DeviceIoControl(
+            var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlGetActive,
                 buffer,
@@ -119,6 +142,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 null,
                 null
             );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
 
             return buffer[0] > 0;
         }
@@ -134,12 +160,17 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
             var bufferLength = Marshal.SizeOf<bool>();
             var buffer = stackalloc byte[bufferLength];
 
             buffer[0] = value ? (byte)1 : (byte)0;
 
-            PInvoke.DeviceIoControl(
+            var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetActive,
                 buffer,
@@ -149,11 +180,14 @@ public sealed class HidHideControlService : IHidHideControlService
                 null,
                 null
             );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
         }
     }
 
     /// <inheritdoc />
-    public unsafe bool IsAppListInverted 
+    public unsafe bool IsAppListInverted
     {
         get
         {
@@ -167,10 +201,15 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
             var bufferLength = Marshal.SizeOf<bool>();
             var buffer = stackalloc byte[bufferLength];
 
-            PInvoke.DeviceIoControl(
+            var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlGetWlInverse,
                 buffer,
@@ -180,6 +219,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 null,
                 null
             );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
 
             return buffer[0] > 0;
         }
@@ -195,12 +237,17 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
             var bufferLength = Marshal.SizeOf<bool>();
             var buffer = stackalloc byte[bufferLength];
 
             buffer[0] = value ? (byte)1 : (byte)0;
 
-            PInvoke.DeviceIoControl(
+            var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWlInverse,
                 buffer,
@@ -210,6 +257,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 null,
                 null
             );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
         }
     }
 
@@ -228,6 +278,11 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
             var buffer = IntPtr.Zero;
 
             try
@@ -236,7 +291,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
                 // Get required buffer size
                 // Check return value for success
-                PInvoke.DeviceIoControl(
+                var ret = PInvoke.DeviceIoControl(
                     handle,
                     IoctlGetBlacklist,
                     null,
@@ -247,11 +302,14 @@ public sealed class HidHideControlService : IHidHideControlService
                     null
                 );
 
+                if (!ret)
+                    throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+
                 buffer = Marshal.AllocHGlobal((int)required);
 
                 // Get actual buffer content
                 // Check return value for success
-                PInvoke.DeviceIoControl(
+                ret = PInvoke.DeviceIoControl(
                     handle,
                     IoctlGetBlacklist,
                     null,
@@ -261,6 +319,9 @@ public sealed class HidHideControlService : IHidHideControlService
                     null,
                     null
                 );
+
+                if (!ret)
+                    throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
 
                 // Store existing block-list in a more manageable "C#" fashion
                 return buffer.MultiSzPointerToStringArray((int)required).ToList();
@@ -287,6 +348,11 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
             var buffer = IntPtr.Zero;
 
             try
@@ -295,7 +361,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
                 // Get required buffer size
                 // Check return value for success
-                PInvoke.DeviceIoControl(
+                var ret = PInvoke.DeviceIoControl(
                     handle,
                     IoctlGetWhitelist,
                     null,
@@ -306,11 +372,14 @@ public sealed class HidHideControlService : IHidHideControlService
                     null
                 );
 
+                if (!ret)
+                    throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+
                 buffer = Marshal.AllocHGlobal((int)required);
 
                 // Get actual buffer content
                 // Check return value for success
-                PInvoke.DeviceIoControl(
+                ret = PInvoke.DeviceIoControl(
                     handle,
                     IoctlGetWhitelist,
                     null,
@@ -320,6 +389,9 @@ public sealed class HidHideControlService : IHidHideControlService
                     null,
                     null
                 );
+
+                if (!ret)
+                    throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
 
                 // Store existing block-list in a more manageable "C#" fashion
                 return buffer.MultiSzPointerToStringArray((int)required).ToList();
@@ -344,6 +416,11 @@ public sealed class HidHideControlService : IHidHideControlService
             null
         );
 
+        if (handle.IsInvalid)
+            throw new HidHideException(
+                "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                Marshal.GetLastWin32Error());
+
         var buffer = IntPtr.Zero;
 
         try
@@ -358,7 +435,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit new list
             // Check return value for success
-            PInvoke.DeviceIoControl(
+            var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
                 buffer.ToPointer(),
@@ -368,6 +445,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 null,
                 null
             );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
         }
         finally
         {
@@ -388,6 +468,11 @@ public sealed class HidHideControlService : IHidHideControlService
             null
         );
 
+        if (handle.IsInvalid)
+            throw new HidHideException(
+                "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                Marshal.GetLastWin32Error());
+
         var buffer = IntPtr.Zero;
 
         try
@@ -399,7 +484,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit new list
             // Check return value for success
-            PInvoke.DeviceIoControl(
+            var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
                 buffer.ToPointer(),
@@ -409,6 +494,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 null,
                 null
             );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
         }
         finally
         {
@@ -429,6 +517,11 @@ public sealed class HidHideControlService : IHidHideControlService
             null
         );
 
+        if (handle.IsInvalid)
+            throw new HidHideException(
+                "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                Marshal.GetLastWin32Error());
+
         var buffer = IntPtr.Zero;
 
         try
@@ -443,7 +536,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit new list
             // Check return value for success
-            PInvoke.DeviceIoControl(
+            var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
                 buffer.ToPointer(),
@@ -453,6 +546,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 null,
                 null
             );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
         }
         finally
         {
@@ -473,6 +569,11 @@ public sealed class HidHideControlService : IHidHideControlService
             null
         );
 
+        if (handle.IsInvalid)
+            throw new HidHideException(
+                "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                Marshal.GetLastWin32Error());
+
         var buffer = IntPtr.Zero;
 
         try
@@ -484,7 +585,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit new list
             // Check return value for success
-            PInvoke.DeviceIoControl(
+            var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
                 buffer.ToPointer(),
@@ -494,6 +595,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 null,
                 null
             );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
         }
         finally
         {
