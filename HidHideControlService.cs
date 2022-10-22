@@ -26,12 +26,12 @@ public interface IHidHideControlService
     /// <summary>
     ///     Returns list of currently blocked instance IDs.
     /// </summary>
-    IEnumerable<string> BlockedInstanceIds { get; }
+    IReadOnlyList<string> BlockedInstanceIds { get; }
 
     /// <summary>
     ///     Returns list of currently allowed (or blocked, see <see cref="IsAppListInverted" />) application paths.
     /// </summary>
-    IEnumerable<string> ApplicationPaths { get; }
+    IReadOnlyList<string> ApplicationPaths { get; }
 
     /// <summary>
     ///     Submit a new instance to block.
@@ -214,7 +214,7 @@ public sealed class HidHideControlService : IHidHideControlService
     }
 
     /// <inheritdoc />
-    public unsafe IEnumerable<string> BlockedInstanceIds
+    public unsafe IReadOnlyList<string> BlockedInstanceIds
     {
         get
         {
@@ -273,7 +273,7 @@ public sealed class HidHideControlService : IHidHideControlService
     }
 
     /// <inheritdoc />
-    public unsafe IEnumerable<string> ApplicationPaths
+    public unsafe IReadOnlyList<string> ApplicationPaths
     {
         get
         {
