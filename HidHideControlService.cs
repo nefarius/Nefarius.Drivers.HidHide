@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Storage.FileSystem;
+using JetBrains.Annotations;
 using Nefarius.Drivers.HidHide.Util;
 
 namespace Nefarius.Drivers.HidHide;
@@ -73,7 +74,8 @@ public class HidHideException : Exception
         NativeErrorCode = errorCode;
     }
 
-    private int NativeErrorCode { get; }
+    [UsedImplicitly]
+    public int NativeErrorCode { get; }
 }
 
 /// <summary>
