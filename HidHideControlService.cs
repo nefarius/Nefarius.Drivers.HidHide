@@ -46,6 +46,12 @@ public interface IHidHideControlService
     void RemoveBlockedInstanceId(string instanceId);
 
     /// <summary>
+    ///     Empties the device instances list. Useful if <see cref="AddBlockedInstanceId" /> or
+    ///     <see cref="BlockedInstanceIds" /> throw exceptions due to nonexistent entries.
+    /// </summary>
+    void ClearBlockedInstancesList();
+
+    /// <summary>
     ///     Submit a new application to allow (or deny if inverse flag is set).
     /// </summary>
     /// <param name="path">The absolute application path to allow.</param>
@@ -56,6 +62,12 @@ public interface IHidHideControlService
     /// </summary>
     /// <param name="path">The absolute application path to revoke.</param>
     void RemoveApplicationPath(string path);
+
+    /// <summary>
+    ///     Empties the application list. Useful if <see cref="AddApplicationPath" /> or <see cref="ApplicationPaths" /> throw
+    ///     exceptions due to nonexistent entries.
+    /// </summary>
+    void ClearApplicationsList();
 }
 
 /// <summary>
@@ -272,7 +284,6 @@ public sealed class HidHideControlService : IHidHideControlService
                 uint required = 0;
 
                 // Get required buffer size
-                // Check return value for success
                 var ret = PInvoke.DeviceIoControl(
                     handle,
                     IoctlGetBlacklist,
@@ -290,7 +301,6 @@ public sealed class HidHideControlService : IHidHideControlService
                 buffer = Marshal.AllocHGlobal((int)required);
 
                 // Get actual buffer content
-                // Check return value for success
                 ret = PInvoke.DeviceIoControl(
                     handle,
                     IoctlGetBlacklist,
@@ -342,7 +352,6 @@ public sealed class HidHideControlService : IHidHideControlService
                 uint required = 0;
 
                 // Get required buffer size
-                // Check return value for success
                 var ret = PInvoke.DeviceIoControl(
                     handle,
                     IoctlGetWhitelist,
@@ -388,25 +397,11 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddBlockedInstanceId(string instanceId)
     {
-        using var handle = PInvoke.CreateFile(
-            ControlDeviceFilename,
-            FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-            FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-            null,
-            FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-            FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-            null
-        );
-
-        if (handle.IsInvalid)
-            throw new HidHideException(
-                "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                Marshal.GetLastWin32Error());
-
         var buffer = IntPtr.Zero;
 
         try
         {
+            // fetch list first or we can't open a write handle
             buffer = BlockedInstanceIds
                 .Concat(new[] // Add our own instance paths to the existing list
                 {
@@ -415,8 +410,22 @@ public sealed class HidHideControlService : IHidHideControlService
                 .Distinct() // Remove duplicates, if any
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
+            using var handle = PInvoke.CreateFile(
+                ControlDeviceFilename,
+                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
+                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                null,
+                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
+                null
+            );
+
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
             // Submit new list
-            // Check return value for success
             var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
@@ -440,32 +449,77 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveBlockedInstanceId(string instanceId)
     {
-        using var handle = PInvoke.CreateFile(
-            ControlDeviceFilename,
-            FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-            FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-            null,
-            FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-            FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-            null
-        );
-
-        if (handle.IsInvalid)
-            throw new HidHideException(
-                "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                Marshal.GetLastWin32Error());
-
         var buffer = IntPtr.Zero;
 
         try
         {
+            // fetch list first or we can't open a write handle
             buffer = BlockedInstanceIds
                 .Where(i => !i.Equals(instanceId, StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
+            using var handle = PInvoke.CreateFile(
+                ControlDeviceFilename,
+                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
+                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                null,
+                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
+                null
+            );
+
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
             // Submit new list
-            // Check return value for success
+            var ret = PInvoke.DeviceIoControl(
+                handle,
+                IoctlSetBlacklist,
+                buffer.ToPointer(),
+                (uint)length,
+                null,
+                0,
+                null,
+                null
+            );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
+    }
+
+    /// <inheritdoc />
+    public unsafe void ClearBlockedInstancesList()
+    {
+        var buffer = IntPtr.Zero;
+
+        try
+        {
+            buffer = Array.Empty<string>().StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+
+            using var handle = PInvoke.CreateFile(
+                ControlDeviceFilename,
+                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
+                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                null,
+                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
+                null
+            );
+
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
+            // Submit new list
             var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
@@ -489,25 +543,11 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddApplicationPath(string path)
     {
-        using var handle = PInvoke.CreateFile(
-            ControlDeviceFilename,
-            FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-            FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-            null,
-            FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-            FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-            null
-        );
-
-        if (handle.IsInvalid)
-            throw new HidHideException(
-                "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                Marshal.GetLastWin32Error());
-
         var buffer = IntPtr.Zero;
 
         try
         {
+            // fetch list first or we can't open a write handle
             buffer = ApplicationPaths
                 .Concat(new[] // Add our own instance paths to the existing list
                 {
@@ -515,6 +555,21 @@ public sealed class HidHideControlService : IHidHideControlService
                 })
                 .Distinct() // Remove duplicates, if any
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+
+            using var handle = PInvoke.CreateFile(
+                ControlDeviceFilename,
+                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
+                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                null,
+                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
+                null
+            );
+
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
 
             // Submit new list
             // Check return value for success
@@ -541,32 +596,78 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveApplicationPath(string path)
     {
-        using var handle = PInvoke.CreateFile(
-            ControlDeviceFilename,
-            FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-            FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-            null,
-            FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-            FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-            null
-        );
-
-        if (handle.IsInvalid)
-            throw new HidHideException(
-                "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                Marshal.GetLastWin32Error());
-
         var buffer = IntPtr.Zero;
 
         try
         {
+            // fetch list first or we can't open a write handle
             buffer = ApplicationPaths
                 .Where(i => !i.Equals(VolumeHelper.PathToDosDevicePath(path), StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
+            using var handle = PInvoke.CreateFile(
+                ControlDeviceFilename,
+                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
+                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                null,
+                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
+                null
+            );
+
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
             // Submit new list
             // Check return value for success
+            var ret = PInvoke.DeviceIoControl(
+                handle,
+                IoctlSetWhitelist,
+                buffer.ToPointer(),
+                (uint)length,
+                null,
+                0,
+                null,
+                null
+            );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
+    }
+
+    /// <inheritdoc />
+    public unsafe void ClearApplicationsList()
+    {
+        var buffer = IntPtr.Zero;
+
+        try
+        {
+            buffer = Array.Empty<string>().StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+
+            using var handle = PInvoke.CreateFile(
+                ControlDeviceFilename,
+                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
+                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                null,
+                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
+                null
+            );
+
+            if (handle.IsInvalid)
+                throw new HidHideException(
+                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
+                    Marshal.GetLastWin32Error());
+
+            // Submit new list
             var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
