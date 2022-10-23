@@ -52,7 +52,7 @@ public class HidHideException : Exception
                 null
             );
 
-            return chars > 0 ? new string(buffer) : null;
+            return chars > 0 ? new string(buffer).TrimEnd('\r', '\n') : null;
         }
     }
 }
