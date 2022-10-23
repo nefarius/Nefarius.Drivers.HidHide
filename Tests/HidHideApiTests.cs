@@ -30,8 +30,10 @@ public class Tests
     {
         var service = new HidHideControlService();
 
+        service.ClearApplicationsList();
+
         // make sure this exists or an exception will be thrown
-        var fileName = @"C:\temp\NVRTXVoice\setup.exe";
+        var fileName = @"F:\Downloads\amd-software-adrenalin-edition-22.10.1-minimalsetup-221003_web.exe";
 
         service.AddApplicationPath(fileName);
 

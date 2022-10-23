@@ -61,6 +61,8 @@ public static class MultiSzHelper
         Marshal.Copy(buffer, rawBuffer, 0, length);
 
         // Trims away potential redundant NULL-characters and splits at NULL-terminator
-        return Encoding.Unicode.GetString(rawBuffer).TrimEnd(char.MinValue).Split(char.MinValue);
+        var trimmed = Encoding.Unicode.GetString(rawBuffer).TrimEnd(char.MinValue);
+        
+        return string.IsNullOrWhiteSpace(trimmed) ? Array.Empty<string>() : trimmed.Split(char.MinValue);
     }
 }

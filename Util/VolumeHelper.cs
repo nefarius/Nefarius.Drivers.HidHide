@@ -32,7 +32,7 @@ public static class VolumeHelper
 
             do
             {
-                var volume = new string(volumeName);
+                var volume = new string(volumeName).TrimEnd('\0');
 
                 if (!PInvoke.GetVolumePathNamesForVolumeName(
                         volume,
@@ -53,9 +53,9 @@ public static class VolumeHelper
 
                 list.Add(new VolumeMeta
                 {
-                    DriveLetter = new string(mountPoint),
+                    DriveLetter = new string(mountPoint).TrimEnd('\0'),
                     VolumeName = volume,
-                    DevicePath = new string(pathName)
+                    DevicePath = new string(pathName).TrimEnd('\0')
                 });
             } while (PInvoke.FindNextVolume(volumeHandle, pVolumeName, ushort.MaxValue));
 
