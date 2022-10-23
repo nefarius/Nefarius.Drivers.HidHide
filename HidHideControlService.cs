@@ -385,7 +385,10 @@ public sealed class HidHideControlService : IHidHideControlService
                     throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
 
                 // Store existing block-list in a more manageable "C#" fashion
-                return buffer.MultiSzPointerToStringArray((int)required).ToList();
+                return buffer
+                    .MultiSzPointerToStringArray((int)required)
+                    .Select(VolumeHelper.DosDevicePathToPath)
+                    .ToList();
             }
             finally
             {
