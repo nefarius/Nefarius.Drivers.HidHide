@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Storage.FileSystem;
-using JetBrains.Annotations;
 using Nefarius.Drivers.HidHide.Util;
 
 namespace Nefarius.Drivers.HidHide;
@@ -57,25 +56,6 @@ public interface IHidHideControlService
     /// </summary>
     /// <param name="path">The absolute application path to revoke.</param>
     void RemoveApplicationPath(string path);
-}
-
-public class HidHideException : Exception
-{
-    public HidHideException()
-    {
-    }
-
-    public HidHideException(string message) : base(message)
-    {
-    }
-
-    public HidHideException(string message, int errorCode) : this(message)
-    {
-        NativeErrorCode = errorCode;
-    }
-
-    [UsedImplicitly]
-    public int NativeErrorCode { get; }
 }
 
 /// <summary>
@@ -131,14 +111,14 @@ public sealed class HidHideControlService : IHidHideControlService
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
 
-            var bufferLength = Marshal.SizeOf<bool>();
+            var bufferLength = Marshal.SizeOf<byte>();
             var buffer = stackalloc byte[bufferLength];
 
             var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlGetActive,
-                buffer,
-                (uint)bufferLength,
+                null,
+                0,
                 buffer,
                 (uint)bufferLength,
                 null,
@@ -167,7 +147,7 @@ public sealed class HidHideControlService : IHidHideControlService
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
 
-            var bufferLength = Marshal.SizeOf<bool>();
+            var bufferLength = Marshal.SizeOf<byte>();
             var buffer = stackalloc byte[bufferLength];
 
             buffer[0] = value ? (byte)1 : (byte)0;
@@ -208,14 +188,14 @@ public sealed class HidHideControlService : IHidHideControlService
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
 
-            var bufferLength = Marshal.SizeOf<bool>();
+            var bufferLength = Marshal.SizeOf<byte>();
             var buffer = stackalloc byte[bufferLength];
 
             var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlGetWlInverse,
-                buffer,
-                (uint)bufferLength,
+                null,
+                0,
                 buffer,
                 (uint)bufferLength,
                 null,

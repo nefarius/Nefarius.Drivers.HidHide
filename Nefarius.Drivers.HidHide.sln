@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nefarius.Drivers.HidHide", "Nefarius.Drivers.HidHide.csproj", "{BB35159C-2813-4D77-AB9E-29AE20CF6183}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nefarius.Drivers.HidHide", "Nefarius.Drivers.HidHide.csproj", "{BB35159C-2813-4D77-AB9E-29AE20CF6183}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{2F927944-03B9-4FD3-BF0A-9F66A0EAB142}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{BB35159C-2813-4D77-AB9E-29AE20CF6183}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB35159C-2813-4D77-AB9E-29AE20CF6183}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB35159C-2813-4D77-AB9E-29AE20CF6183}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F927944-03B9-4FD3-BF0A-9F66A0EAB142}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F927944-03B9-4FD3-BF0A-9F66A0EAB142}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F927944-03B9-4FD3-BF0A-9F66A0EAB142}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F927944-03B9-4FD3-BF0A-9F66A0EAB142}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
