@@ -236,7 +236,7 @@ public sealed class HidHideControlService : IHidHideControlService
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
 
-            var bufferLength = Marshal.SizeOf<bool>();
+            var bufferLength = Marshal.SizeOf<byte>();
             var buffer = stackalloc byte[bufferLength];
 
             buffer[0] = value ? (byte)1 : (byte)0;
