@@ -605,7 +605,7 @@ public sealed class HidHideControlService : IHidHideControlService
         {
             // fetch list first or we can't open a write handle
             buffer = ApplicationPaths
-                .Where(i => !i.Equals(VolumeHelper.PathToDosDevicePath(path), StringComparison.OrdinalIgnoreCase))
+                .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
