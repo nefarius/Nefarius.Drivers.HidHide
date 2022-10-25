@@ -139,7 +139,7 @@ public static class VolumeHelper
                     NormalizePath(m.DriveLetter) == NormalizePath(current.FullName))
                 ?.DevicePath;
 
-            pathNoRoot = pathPart[current.FullName.Length..];
+            pathNoRoot = pathPart.Substring(current.FullName.Length);
 
             break;
         }
@@ -150,7 +150,7 @@ public static class VolumeHelper
             var driveLetter = Path.GetPathRoot(pathPart);
             devicePath = GetVolumeMappings().FirstOrDefault(m =>
                 m.DriveLetter.Equals(driveLetter, StringComparison.InvariantCultureIgnoreCase))?.DevicePath;
-            pathNoRoot = pathPart[Path.GetPathRoot(pathPart).Length..];
+            pathNoRoot = pathPart.Substring(Path.GetPathRoot(pathPart).Length);
         }
 
         if (string.IsNullOrEmpty(devicePath))
@@ -167,10 +167,10 @@ public static class VolumeHelper
 
     private class VolumeMeta
     {
-        public string DriveLetter { get; init; }
+        public string DriveLetter { get; set; }
 
-        public string VolumeName { get; init; }
+        public string VolumeName { get; set; }
 
-        public string DevicePath { get; init; }
+        public string DevicePath { get; set; }
     }
 }

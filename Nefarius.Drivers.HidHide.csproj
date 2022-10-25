@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6-windows</TargetFramework>
+    <TargetFrameworks>net6-windows;netstandard2.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -15,6 +15,7 @@
     <RepositoryUrl>https://github.com/nefarius/Nefarius.Drivers.HidHide</RepositoryUrl>
     <PackageProjectUrl>https://github.com/nefarius/Nefarius.Drivers.HidHide</PackageProjectUrl>
     <Description>Managed API for configuring HidHide.</Description>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
