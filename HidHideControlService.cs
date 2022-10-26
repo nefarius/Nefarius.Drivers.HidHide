@@ -258,7 +258,7 @@ public sealed class HidHideControlService : IHidHideControlService
     }
 
     /// <inheritdoc />
-    public unsafe IReadOnlyList<string> BlockedInstanceIds
+    public IReadOnlyList<string> BlockedInstanceIds
     {
         get
         {
@@ -277,56 +277,12 @@ public sealed class HidHideControlService : IHidHideControlService
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
 
-            var buffer = IntPtr.Zero;
-
-            try
-            {
-                uint required = 0;
-
-                // Get required buffer size
-                var ret = PInvoke.DeviceIoControl(
-                    handle,
-                    IoctlGetBlacklist,
-                    null,
-                    0,
-                    null,
-                    0,
-                    &required,
-                    null
-                );
-
-                if (!ret)
-                    throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
-
-                buffer = Marshal.AllocHGlobal((int)required);
-
-                // Get actual buffer content
-                ret = PInvoke.DeviceIoControl(
-                    handle,
-                    IoctlGetBlacklist,
-                    null,
-                    0,
-                    buffer.ToPointer(),
-                    required,
-                    null,
-                    null
-                );
-
-                if (!ret)
-                    throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
-
-                // Store existing block-list in a more manageable "C#" fashion
-                return buffer.MultiSzPointerToStringArray((int)required).ToList();
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(buffer);
-            }
+            return GetBlockedInstances(handle);
         }
     }
 
     /// <inheritdoc />
-    public unsafe IReadOnlyList<string> ApplicationPaths
+    public IReadOnlyList<string> ApplicationPaths
     {
         get
         {
@@ -345,55 +301,7 @@ public sealed class HidHideControlService : IHidHideControlService
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
 
-            var buffer = IntPtr.Zero;
-
-            try
-            {
-                uint required = 0;
-
-                // Get required buffer size
-                var ret = PInvoke.DeviceIoControl(
-                    handle,
-                    IoctlGetWhitelist,
-                    null,
-                    0,
-                    null,
-                    0,
-                    &required,
-                    null
-                );
-
-                if (!ret)
-                    throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
-
-                buffer = Marshal.AllocHGlobal((int)required);
-
-                // Get actual buffer content
-                // Check return value for success
-                ret = PInvoke.DeviceIoControl(
-                    handle,
-                    IoctlGetWhitelist,
-                    null,
-                    0,
-                    buffer.ToPointer(),
-                    required,
-                    null,
-                    null
-                );
-
-                if (!ret)
-                    throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
-
-                // Store existing block-list in a more manageable "C#" fashion
-                return buffer
-                    .MultiSzPointerToStringArray((int)required)
-                    .Select(VolumeHelper.DosDevicePathToPath)
-                    .ToList();
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(buffer);
-            }
+            return GetApplications(handle);
         }
     }
 
@@ -404,15 +312,6 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            // fetch list first or we can't open a write handle
-            buffer = BlockedInstanceIds
-                .Concat(new[] // Add our own instance paths to the existing list
-                {
-                    instanceId
-                })
-                .Distinct() // Remove duplicates, if any
-                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
-
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -427,6 +326,14 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideException(
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
+
+            buffer = GetBlockedInstances(handle)
+                .Concat(new[] // Add our own instance paths to the existing list
+                {
+                    instanceId
+                })
+                .Distinct() // Remove duplicates, if any
+                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -456,12 +363,6 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            // fetch list first or we can't open a write handle
-            buffer = BlockedInstanceIds
-                .Where(i => !i.Equals(instanceId, StringComparison.OrdinalIgnoreCase))
-                .Distinct() // Remove duplicates, if any
-                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
-
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -476,6 +377,11 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideException(
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
+
+            buffer = GetBlockedInstances(handle)
+                .Where(i => !i.Equals(instanceId, StringComparison.OrdinalIgnoreCase))
+                .Distinct() // Remove duplicates, if any
+                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -550,16 +456,6 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            // fetch list first or we can't open a write handle
-            buffer = ApplicationPaths
-                .Concat(new[] // Add our own instance paths to the existing list
-                {
-                    path
-                })
-                .Distinct() // Remove duplicates, if any
-                .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
-                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
-
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -575,8 +471,16 @@ public sealed class HidHideControlService : IHidHideControlService
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
 
+            buffer = GetApplications(handle)
+                .Concat(new[] // Add our own instance paths to the existing list
+                {
+                    path
+                })
+                .Distinct() // Remove duplicates, if any
+                .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
+                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+
             // Submit new list
-            // Check return value for success
             var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
@@ -604,13 +508,6 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            // fetch list first or we can't open a write handle
-            buffer = ApplicationPaths
-                .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
-                .Distinct() // Remove duplicates, if any
-                .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
-                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
-
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -626,8 +523,13 @@ public sealed class HidHideControlService : IHidHideControlService
                     "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
                     Marshal.GetLastWin32Error());
 
+            buffer = GetApplications(handle)
+                .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
+                .Distinct() // Remove duplicates, if any
+                .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
+                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+
             // Submit new list
-            // Check return value for success
             var ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
@@ -686,6 +588,108 @@ public sealed class HidHideControlService : IHidHideControlService
 
             if (!ret)
                 throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
+    }
+
+    private static unsafe IReadOnlyList<string> GetApplications(SafeHandle handle)
+    {
+        var buffer = IntPtr.Zero;
+
+        try
+        {
+            uint required = 0;
+
+            // Get required buffer size
+            var ret = PInvoke.DeviceIoControl(
+                handle,
+                IoctlGetWhitelist,
+                null,
+                0,
+                null,
+                0,
+                &required,
+                null
+            );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+
+            buffer = Marshal.AllocHGlobal((int)required);
+
+            // Get actual buffer content
+            // Check return value for success
+            ret = PInvoke.DeviceIoControl(
+                handle,
+                IoctlGetWhitelist,
+                null,
+                0,
+                buffer.ToPointer(),
+                required,
+                null,
+                null
+            );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+
+            // Store existing block-list in a more manageable "C#" fashion
+            return buffer
+                .MultiSzPointerToStringArray((int)required)
+                .Select(VolumeHelper.DosDevicePathToPath)
+                .ToList();
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+        }
+    }
+
+    private static unsafe IReadOnlyList<string> GetBlockedInstances(SafeHandle handle)
+    {
+        var buffer = IntPtr.Zero;
+
+        try
+        {
+            uint required = 0;
+
+            // Get required buffer size
+            var ret = PInvoke.DeviceIoControl(
+                handle,
+                IoctlGetBlacklist,
+                null,
+                0,
+                null,
+                0,
+                &required,
+                null
+            );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+
+            buffer = Marshal.AllocHGlobal((int)required);
+
+            // Get actual buffer content
+            ret = PInvoke.DeviceIoControl(
+                handle,
+                IoctlGetBlacklist,
+                null,
+                0,
+                buffer.ToPointer(),
+                required,
+                null,
+                null
+            );
+
+            if (!ret)
+                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+
+            // Store existing block-list in a more manageable "C#" fashion
+            return buffer.MultiSzPointerToStringArray((int)required).ToList();
         }
         finally
         {
