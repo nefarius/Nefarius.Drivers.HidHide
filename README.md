@@ -8,7 +8,11 @@ Managed API for configuring [HidHide](https://github.com/ViGEm/HidHide).
 
 ## Usage
 
-Create an instance of `HidHideControlService` whenever you need it. The following methods and properties are available:
+Create an instance of `HidHideControlService` whenever you need it.
+
+You can use it as a singleton with dependency injection as well.
+
+The following methods and properties are available:
 
 ```csharp
 /// <summary>
