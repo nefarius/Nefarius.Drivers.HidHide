@@ -554,9 +554,10 @@ public sealed class HidHideControlService : IHidHideControlService
             buffer = ApplicationPaths
                 .Concat(new[] // Add our own instance paths to the existing list
                 {
-                    VolumeHelper.PathToDosDevicePath(path)
+                    path
                 })
                 .Distinct() // Remove duplicates, if any
+                .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
             using var handle = PInvoke.CreateFile(
@@ -607,6 +608,7 @@ public sealed class HidHideControlService : IHidHideControlService
             buffer = ApplicationPaths
                 .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
+                .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
             using var handle = PInvoke.CreateFile(
