@@ -19,8 +19,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="App\**" />
     <Compile Remove="Tests\**" />
+    <EmbeddedResource Remove="App\**" />
     <EmbeddedResource Remove="Tests\**" />
+    <None Remove="App\**" />
     <None Remove="Tests\**" />
   </ItemGroup>
 

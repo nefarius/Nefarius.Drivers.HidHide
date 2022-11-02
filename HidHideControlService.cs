@@ -231,17 +231,27 @@ public sealed class HidHideControlService : IHidHideControlService
 
             var buffer = Marshal.AllocHGlobal((int)length * 2);
 
-            ret = PInvoke.CM_Get_Device_Interface_List(
-                DeviceInterface,
-                null,
-                new PWSTR((char*)buffer.ToPointer()),
-                length,
-                PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
+            try
+            {
+                ret = PInvoke.CM_Get_Device_Interface_List(
+                    DeviceInterface,
+                    null,
+                    new PWSTR((char*)buffer.ToPointer()),
+                    length,
+                    PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
                 );
 
-            Marshal.FreeHGlobal(buffer);
+                if (ret != CONFIGRET.CR_SUCCESS)
+                    return false;
 
-            return ret == CONFIGRET.CR_SUCCESS;
+                var firstInstanceId = new string((char*)buffer.ToPointer());
+
+                return !string.IsNullOrEmpty(firstInstanceId);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 
