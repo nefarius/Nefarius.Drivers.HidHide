@@ -125,6 +125,11 @@ public sealed class HidHideControlService : IHidHideControlService
     private static readonly uint IoctlSetWlInverse =
         CTL_CODE(IoControlDeviceType, 2055, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
+    /// <summary>
+    ///     Interface GUID to enumerate HidHide devices.
+    /// </summary>
+    public static Guid DeviceInterface => Guid.Parse("{0C320FF7-BD9B-42B6-BDAF-49FEB9C91649}");
+
     /// <inheritdoc />
     public unsafe bool IsActive
     {
