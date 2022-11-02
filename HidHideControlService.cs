@@ -229,15 +229,17 @@ public sealed class HidHideControlService : IHidHideControlService
             if (ret != CONFIGRET.CR_SUCCESS)
                 return false;
 
-            var buffer = stackalloc char[(int)length * 2];
+            var buffer = Marshal.AllocHGlobal((int)length * 2);
 
             ret = PInvoke.CM_Get_Device_Interface_List(
                 DeviceInterface,
                 null,
-                new PWSTR(buffer),
+                new PWSTR((char*)buffer.ToPointer()),
                 length,
                 PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
                 );
+
+            Marshal.FreeHGlobal(buffer);
 
             return ret == CONFIGRET.CR_SUCCESS;
         }
