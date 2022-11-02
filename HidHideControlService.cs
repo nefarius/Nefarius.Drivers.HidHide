@@ -219,6 +219,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            // query for required buffer size (in characters)
             var ret = PInvoke.CM_Get_Device_Interface_List_Size(
                 out var length,
                 DeviceInterface,
@@ -229,10 +230,12 @@ public sealed class HidHideControlService : IHidHideControlService
             if (ret != CONFIGRET.CR_SUCCESS)
                 return false;
 
+            // allocate required bytes (wide characters)
             var buffer = Marshal.AllocHGlobal((int)length * 2);
 
             try
             {
+                // grab the actual buffer
                 ret = PInvoke.CM_Get_Device_Interface_List(
                     DeviceInterface,
                     null,
@@ -244,8 +247,10 @@ public sealed class HidHideControlService : IHidHideControlService
                 if (ret != CONFIGRET.CR_SUCCESS)
                     return false;
 
+                // convert to managed string
                 var firstInstanceId = new string((char*)buffer.ToPointer());
 
+                // if HidHide is not loaded, the returned list will be empty
                 return !string.IsNullOrEmpty(firstInstanceId);
             }
             finally
