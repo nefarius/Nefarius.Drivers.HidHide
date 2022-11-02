@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Storage.FileSystem;
 using Nefarius.Drivers.HidHide.Util;
+using Microsoft.Win32;
 
 namespace Nefarius.Drivers.HidHide;
 
@@ -17,6 +18,11 @@ public interface IHidHideControlService
     ///     Gets or sets whether global device hiding is currently active or not.
     /// </summary>
     bool IsActive { get; set; }
+
+    /// <summary>
+    ///     Returns True if HidHide Driver is installed.
+    /// </summary>
+    bool IsInstalled { get; }
 
     /// <summary>
     ///     Gets or sets whether the application list is inverted (from block all/allow specific to allow all/block specific).
@@ -125,11 +131,35 @@ public sealed class HidHideControlService : IHidHideControlService
     private static readonly uint IoctlSetWlInverse =
         CTL_CODE(IoControlDeviceType, 2055, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
 
+    public bool IsInstalled
+    {
+        get
+        {
+            try
+            {
+                RegistryKey subKeys = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)
+                                                 .OpenSubKey(@"SYSTEM\CurrentControlSet\Enum\ROOT\SYSTEM\");
+                foreach (string device in subKeys.GetSubKeyNames())
+                {
+                    string[] temp = (string[])subKeys.OpenSubKey(device).GetValue("HardwareID");
+                    if (temp.Contains(@"root\HidHide"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch { }
+            throw new HidHideException("HidHide Driver not installed.");
+        }
+    }
+
     /// <inheritdoc />
     public unsafe bool IsActive
     {
         get
         {
+            _ = IsInstalled;
+
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -166,6 +196,8 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         set
         {
+            _ = IsInstalled;
+
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -207,6 +239,8 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            _ = IsInstalled;
+
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -243,6 +277,8 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         set
         {
+            _ = IsInstalled;
+
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -284,6 +320,8 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            _ = IsInstalled;
+
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -308,6 +346,8 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            _ = IsInstalled;
+
             using var handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -330,6 +370,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddBlockedInstanceId(string instanceId)
     {
+        _ = IsInstalled;
+
         var buffer = IntPtr.Zero;
 
         try
@@ -381,6 +423,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveBlockedInstanceId(string instanceId)
     {
+        _ = IsInstalled;
+
         var buffer = IntPtr.Zero;
 
         try
@@ -429,6 +473,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearBlockedInstancesList()
     {
+        _ = IsInstalled;
+
         var buffer = IntPtr.Zero;
 
         try
@@ -474,6 +520,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddApplicationPath(string path)
     {
+        _ = IsInstalled;
+
         var buffer = IntPtr.Zero;
 
         try
@@ -526,6 +574,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveApplicationPath(string path)
     {
+        _ = IsInstalled;
+
         var buffer = IntPtr.Zero;
 
         try
@@ -575,6 +625,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearApplicationsList()
     {
+        _ = IsInstalled;
+
         var buffer = IntPtr.Zero;
 
         try
