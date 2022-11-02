@@ -228,7 +228,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (ret != CONFIGRET.CR_SUCCESS)
-                return false;
+                throw new HidHideException("Failed to request interface list size.");
 
             // allocate required bytes (wide characters)
             var buffer = Marshal.AllocHGlobal((int)length * 2);
@@ -245,7 +245,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 );
 
                 if (ret != CONFIGRET.CR_SUCCESS)
-                    return false;
+                    throw new HidHideException("Failed to request interface list.");
 
                 // convert to managed string
                 var firstInstanceId = new string((char*)buffer.ToPointer());
