@@ -220,7 +220,8 @@ public sealed class HidHideControlService : IHidHideControlService
         get
         {
             var ret = PInvoke.CM_Get_Device_Interface_List_Size(
-                out var length, DeviceInterface,
+                out var length,
+                DeviceInterface,
                 null,
                 PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
             );
