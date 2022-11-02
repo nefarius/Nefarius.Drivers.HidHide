@@ -415,6 +415,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 .Distinct() // Remove duplicates, if any
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
+            if (length >= short.MaxValue)
+                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
+
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
                 handle,
@@ -462,6 +465,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 .Where(i => !i.Equals(instanceId, StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+
+            if (length >= short.MaxValue)
+                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -560,6 +566,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
+            if (length >= short.MaxValue)
+                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
+
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
                 handle,
@@ -608,6 +617,9 @@ public sealed class HidHideControlService : IHidHideControlService
                 .Distinct() // Remove duplicates, if any
                 .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+
+            if (length >= short.MaxValue)
+                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -698,6 +710,9 @@ public sealed class HidHideControlService : IHidHideControlService
             if (!ret)
                 throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
 
+            if (required >= short.MaxValue)
+                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
+
             buffer = Marshal.AllocHGlobal((int)required);
 
             // Get actual buffer content
@@ -750,6 +765,9 @@ public sealed class HidHideControlService : IHidHideControlService
 
             if (!ret)
                 throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+
+            if (required >= short.MaxValue)
+                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
 
             buffer = Marshal.AllocHGlobal((int)required);
 
