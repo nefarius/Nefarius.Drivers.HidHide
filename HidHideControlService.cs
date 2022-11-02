@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Windows.Win32;
+using Windows.Win32.Devices.DeviceAndDriverInstallation;
+using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using Nefarius.Drivers.HidHide.Util;
 
@@ -17,6 +19,11 @@ public interface IHidHideControlService
     ///     Gets or sets whether global device hiding is currently active or not.
     /// </summary>
     bool IsActive { get; set; }
+
+    /// <summary>
+    ///     Gets whether the driver is present and operable.
+    /// </summary>
+    bool IsInstalled { get; }
 
     /// <summary>
     ///     Gets or sets whether the application list is inverted (from block all/allow specific to allow all/block specific).
@@ -204,6 +211,34 @@ public sealed class HidHideControlService : IHidHideControlService
 
             if (!ret)
                 throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+        }
+    }
+
+    /// <inheritdoc />
+    public unsafe bool IsInstalled
+    {
+        get
+        {
+            var ret = PInvoke.CM_Get_Device_Interface_List_Size(
+                out var length, DeviceInterface,
+                null,
+                PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
+            );
+
+            if (ret != CONFIGRET.CR_SUCCESS)
+                return false;
+
+            var buffer = stackalloc char[(int)length * 2];
+
+            ret = PInvoke.CM_Get_Device_Interface_List(
+                DeviceInterface,
+                null,
+                new PWSTR(buffer),
+                length,
+                PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
+                );
+
+            return ret == CONFIGRET.CR_SUCCESS;
         }
     }
 
