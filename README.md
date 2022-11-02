@@ -26,6 +26,11 @@ public interface IHidHideControlService
     ///     Gets or sets whether global device hiding is currently active or not.
     /// </summary>
     bool IsActive { get; set; }
+    
+    /// <summary>
+    ///     Gets whether the driver is present and operable.
+    /// </summary>
+    bool IsInstalled { get; }
 
     /// <summary>
     ///     Gets or sets whether the application list is inverted (from block all/allow specific to allow all/block specific).
