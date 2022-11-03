@@ -6,6 +6,7 @@ using Windows.Win32;
 using Windows.Win32.Devices.DeviceAndDriverInstallation;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
+using Microsoft.Win32.SafeHandles;
 using Nefarius.Drivers.HidHide.Util;
 
 namespace Nefarius.Drivers.HidHide;
@@ -137,6 +138,20 @@ public sealed class HidHideControlService : IHidHideControlService
     /// </summary>
     public static Guid DeviceInterface => Guid.Parse("{0C320FF7-BD9B-42B6-BDAF-49FEB9C91649}");
 
+    private static void HaltAndCatchFire(SafeFileHandle handle)
+    {
+        if(!handle.IsInvalid || handle.IsClosed)
+            return;
+
+        switch ((WIN32_ERROR)Marshal.GetLastWin32Error())
+        {
+            case WIN32_ERROR.ERROR_ACCESS_DENIED:
+                throw new HidHideDriverAccessFailedException();
+            case WIN32_ERROR.ERROR_NOT_FOUND:
+                throw new HidHideDriverNotFoundException();
+        }
+    }
+
     /// <inheritdoc />
     public unsafe bool IsActive
     {
@@ -152,10 +167,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             var bufferLength = Marshal.SizeOf<byte>();
             var buffer = stackalloc byte[bufferLength];
@@ -172,7 +184,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
 
             return buffer[0] > 0;
         }
@@ -188,10 +200,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             var bufferLength = Marshal.SizeOf<byte>();
             var buffer = stackalloc byte[bufferLength];
@@ -210,7 +219,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
         }
     }
 
@@ -228,7 +237,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (ret != CONFIGRET.CR_SUCCESS)
-                throw new HidHideException("Failed to request interface list size.");
+                throw new HidHideDetectionFailedException();
 
             // allocate required bytes (wide characters)
             var buffer = Marshal.AllocHGlobal((int)length * 2);
@@ -245,7 +254,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 );
 
                 if (ret != CONFIGRET.CR_SUCCESS)
-                    throw new HidHideException("Failed to request interface list.");
+                    throw new HidHideDetectionFailedException();
 
                 // convert to managed string
                 var firstInstanceId = new string((char*)buffer.ToPointer());
@@ -275,10 +284,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             var bufferLength = Marshal.SizeOf<byte>();
             var buffer = stackalloc byte[bufferLength];
@@ -295,7 +301,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
 
             return buffer[0] > 0;
         }
@@ -311,10 +317,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             var bufferLength = Marshal.SizeOf<byte>();
             var buffer = stackalloc byte[bufferLength];
@@ -333,7 +336,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
         }
     }
 
@@ -352,10 +355,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             return GetBlockedInstances(handle);
         }
@@ -376,10 +376,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             return GetApplications(handle);
         }
@@ -402,10 +399,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             buffer = GetBlockedInstances(handle)
                 .Concat(new[] // Add our own instance paths to the existing list
@@ -416,7 +410,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
-                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
+                throw new HidHideBufferOverflowException();
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -431,7 +425,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
         }
         finally
         {
@@ -456,10 +450,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             buffer = GetBlockedInstances(handle)
                 .Where(i => !i.Equals(instanceId, StringComparison.OrdinalIgnoreCase))
@@ -467,7 +458,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
-                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
+                throw new HidHideBufferOverflowException();
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -482,7 +473,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
         }
         finally
         {
@@ -509,10 +500,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -527,7 +515,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
         }
         finally
         {
@@ -552,10 +540,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             buffer = GetApplications(handle)
                 .Concat(new[] // Add our own instance paths to the existing list
@@ -567,7 +552,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
-                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
+                throw new HidHideBufferOverflowException();
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -582,7 +567,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
         }
         finally
         {
@@ -607,10 +592,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             buffer = GetApplications(handle)
                 .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
@@ -619,7 +601,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
-                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
+                throw new HidHideBufferOverflowException();
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -634,7 +616,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
         }
         finally
         {
@@ -661,10 +643,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 null
             );
 
-            if (handle.IsInvalid)
-                throw new HidHideException(
-                    "Failed to open handle to driver. Make sure no other process is using the API at the same time.",
-                    Marshal.GetLastWin32Error());
+            handle.HaltAndCatchFire();
 
             // Submit new list
             var ret = PInvoke.DeviceIoControl(
@@ -679,7 +658,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
         }
         finally
         {
@@ -708,10 +687,10 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
 
             if (required >= short.MaxValue)
-                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
+                throw new HidHideBufferOverflowException();
 
             buffer = Marshal.AllocHGlobal((int)required);
 
@@ -729,7 +708,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
 
             // Store existing block-list in a more manageable "C#" fashion
             return buffer
@@ -764,10 +743,10 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
 
             if (required >= short.MaxValue)
-                throw new ArgumentOutOfRangeException($"Buffer size exceeded maximum allowed value of {short.MaxValue} characters.");
+                throw new HidHideBufferOverflowException();
 
             buffer = Marshal.AllocHGlobal((int)required);
 
@@ -784,7 +763,7 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
-                throw new HidHideException("Request failed.", Marshal.GetLastWin32Error());
+                throw new HidHideRequestFailedException();
 
             // Store existing block-list in a more manageable "C#" fashion
             return buffer.MultiSzPointerToStringArray((int)required).ToList();
