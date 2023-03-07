@@ -13,16 +13,16 @@ namespace Nefarius.Drivers.HidHide;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 public abstract class HidHideException : Exception
 {
-	protected HidHideException()
+	internal HidHideException()
 	{
 	}
 
-	protected HidHideException(string message) : base(message)
+	internal HidHideException(string message) : base(message)
 	{
 		NativeErrorCode = Marshal.GetLastWin32Error();
 	}
 
-	protected HidHideException(string message, int errorCode) : this(message)
+	internal HidHideException(string message, int errorCode) : this(message)
 	{
 		NativeErrorCode = errorCode;
 	}
