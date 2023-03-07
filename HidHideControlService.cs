@@ -252,7 +252,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 ret = PInvoke.CM_Get_Device_Interface_List(
                     DeviceInterface,
                     null,
-                    new PWSTR((char*)buffer.ToPointer()),
+                    new PZZWSTR((char*)buffer.ToPointer()),
                     length,
                     PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
                 );
