@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Windows.Win32;
@@ -14,6 +15,8 @@ namespace Nefarius.Drivers.HidHide;
 /// <summary>
 ///     Provides a managed wrapper for communicating with HidHide driver.
 /// </summary>
+[SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public interface IHidHideControlService
 {
     /// <summary>
@@ -103,6 +106,7 @@ public interface IHidHideControlService
 /// <summary>
 ///     Provides a managed wrapper for communicating with HidHide driver.
 /// </summary>
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public sealed class HidHideControlService : IHidHideControlService
 {
     private const uint IoControlDeviceType = 32769;
