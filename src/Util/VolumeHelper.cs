@@ -28,7 +28,7 @@ public static class VolumeHelper
         fixed (char* pPathName = pathName)
         fixed (char* pMountPoint = mountPoint)
         {
-            FindVolumeHandle volumeHandle = PInvoke.FindFirstVolume(pVolumeName, ushort.MaxValue);
+            var volumeHandle = PInvoke.FindFirstVolume(pVolumeName, ushort.MaxValue);
 
             List<VolumeMeta> list = new();
 

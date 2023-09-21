@@ -117,28 +117,28 @@ public sealed class HidHideControlService : IHidHideControlService
     private const string ControlDeviceFilename = "\\\\.\\HidHide";
 
     private static readonly uint IoctlGetWhitelist =
-        CTL_CODE(IoControlDeviceType, 2048, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
+        CTL_CODE(IoControlDeviceType, 2048, PInvoke.METHOD_BUFFERED, FILE_ACCESS_RIGHTS.FILE_READ_DATA);
 
     private static readonly uint IoctlSetWhitelist =
-        CTL_CODE(IoControlDeviceType, 2049, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
+        CTL_CODE(IoControlDeviceType, 2049, PInvoke.METHOD_BUFFERED, FILE_ACCESS_RIGHTS.FILE_READ_DATA);
 
     private static readonly uint IoctlGetBlacklist =
-        CTL_CODE(IoControlDeviceType, 2050, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
+        CTL_CODE(IoControlDeviceType, 2050, PInvoke.METHOD_BUFFERED, FILE_ACCESS_RIGHTS.FILE_READ_DATA);
 
     private static readonly uint IoctlSetBlacklist =
-        CTL_CODE(IoControlDeviceType, 2051, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
+        CTL_CODE(IoControlDeviceType, 2051, PInvoke.METHOD_BUFFERED, FILE_ACCESS_RIGHTS.FILE_READ_DATA);
 
     private static readonly uint IoctlGetActive =
-        CTL_CODE(IoControlDeviceType, 2052, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
+        CTL_CODE(IoControlDeviceType, 2052, PInvoke.METHOD_BUFFERED, FILE_ACCESS_RIGHTS.FILE_READ_DATA);
 
     private static readonly uint IoctlSetActive =
-        CTL_CODE(IoControlDeviceType, 2053, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
+        CTL_CODE(IoControlDeviceType, 2053, PInvoke.METHOD_BUFFERED, FILE_ACCESS_RIGHTS.FILE_READ_DATA);
 
     private static readonly uint IoctlGetWlInverse =
-        CTL_CODE(IoControlDeviceType, 2054, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
+        CTL_CODE(IoControlDeviceType, 2054, PInvoke.METHOD_BUFFERED, FILE_ACCESS_RIGHTS.FILE_READ_DATA);
 
     private static readonly uint IoctlSetWlInverse =
-        CTL_CODE(IoControlDeviceType, 2055, PInvoke.METHOD_BUFFERED, FILE_ACCESS_FLAGS.FILE_READ_DATA);
+        CTL_CODE(IoControlDeviceType, 2055, PInvoke.METHOD_BUFFERED, FILE_ACCESS_RIGHTS.FILE_READ_DATA);
 
     /// <summary>
     ///     Interface GUID to enumerate HidHide devices.
@@ -150,15 +150,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -185,15 +177,7 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         set
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -275,15 +259,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -310,15 +286,7 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         set
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -350,15 +318,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -371,15 +331,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -394,15 +346,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -449,15 +393,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -503,15 +439,7 @@ public sealed class HidHideControlService : IHidHideControlService
         {
             buffer = Array.Empty<string>().StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -545,15 +473,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -601,15 +521,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -656,15 +568,7 @@ public sealed class HidHideControlService : IHidHideControlService
         {
             buffer = Array.Empty<string>().StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
-            using SafeFileHandle handle = PInvoke.CreateFile(
-                ControlDeviceFilename,
-                FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
-                FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                null,
-                FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
-                null
-            );
+            using SafeFileHandle handle = OpenControlDeviceHandle();
 
             handle.HaltAndCatchFire();
 
@@ -689,6 +593,19 @@ public sealed class HidHideControlService : IHidHideControlService
         {
             Marshal.FreeHGlobal(buffer);
         }
+    }
+
+    private static SafeFileHandle OpenControlDeviceHandle()
+    {
+        return PInvoke.CreateFile(
+            ControlDeviceFilename,
+            (uint)(FILE_ACCESS_RIGHTS.FILE_GENERIC_READ | FILE_ACCESS_RIGHTS.FILE_GENERIC_WRITE),
+            FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+            null,
+            FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+            FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
+            null
+        );
     }
 
     private static unsafe IReadOnlyList<string> GetApplications(SafeHandle handle)
@@ -811,7 +728,7 @@ public sealed class HidHideControlService : IHidHideControlService
         }
     }
 
-    private static UInt32 CTL_CODE(uint deviceType, uint function, uint method, FILE_ACCESS_FLAGS access)
+    private static UInt32 CTL_CODE(uint deviceType, uint function, uint method, FILE_ACCESS_RIGHTS access)
     {
         return (deviceType << 16) | ((uint)access << 14) | (function << 2) | method;
     }
