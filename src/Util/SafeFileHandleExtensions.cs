@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices;
+
 using Windows.Win32.Foundation;
+
 using Microsoft.Win32.SafeHandles;
 
 namespace Nefarius.Drivers.HidHide.Util;
@@ -15,7 +17,9 @@ internal static class SafeFileHandleExtensions
     internal static void HaltAndCatchFire(this SafeFileHandle handle)
     {
         if (!handle.IsInvalid || handle.IsClosed)
+        {
             return;
+        }
 
         switch ((WIN32_ERROR)Marshal.GetLastWin32Error())
         {

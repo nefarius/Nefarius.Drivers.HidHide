@@ -27,17 +27,17 @@ public static class MultiSzHelper
             /* skip invalid entries */
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Aggregate(multiSz,
-            (current, entry) => current.Concat(Encoding.Unicode.GetBytes(entry))
-                .Concat(Encoding.Unicode.GetBytes(new[] { char.MinValue })));
+                (current, entry) => current.Concat(Encoding.Unicode.GetBytes(entry))
+                    .Concat(Encoding.Unicode.GetBytes(new[] { char.MinValue })));
 
         // Add another NULL-terminator to signal end of the list
         multiSz = multiSz.Concat(Encoding.Unicode.GetBytes(new[] { char.MinValue }));
 
         // Convert expression to array
-        var multiSzArray = multiSz.ToArray();
+        byte[] multiSzArray = multiSz.ToArray();
 
         // Convert array to managed native buffer
-        var buffer = Marshal.AllocHGlobal(multiSzArray.Length);
+        IntPtr buffer = Marshal.AllocHGlobal(multiSzArray.Length);
         Marshal.Copy(multiSzArray, 0, buffer, multiSzArray.Length);
 
         length = multiSzArray.Length;
@@ -55,14 +55,14 @@ public static class MultiSzHelper
     public static IEnumerable<string> MultiSzPointerToStringArray(this IntPtr buffer, int length)
     {
         // Temporary byte array
-        var rawBuffer = new byte[length];
+        byte[] rawBuffer = new byte[length];
 
         // Grab data from buffer
         Marshal.Copy(buffer, rawBuffer, 0, length);
 
         // Trims away potential redundant NULL-characters and splits at NULL-terminator
-        var trimmed = Encoding.Unicode.GetString(rawBuffer).TrimEnd(char.MinValue);
-        
+        string trimmed = Encoding.Unicode.GetString(rawBuffer).TrimEnd(char.MinValue);
+
         return string.IsNullOrWhiteSpace(trimmed) ? Array.Empty<string>() : trimmed.Split(char.MinValue);
     }
 }
