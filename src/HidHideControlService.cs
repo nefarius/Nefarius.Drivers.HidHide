@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
+
 using Windows.Win32;
 using Windows.Win32.Devices.DeviceAndDriverInstallation;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
+
 using Microsoft.Win32.SafeHandles;
+
 using Nefarius.Drivers.HidHide.Util;
 
 namespace Nefarius.Drivers.HidHide;
@@ -147,7 +150,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -159,10 +162,10 @@ public sealed class HidHideControlService : IHidHideControlService
 
             handle.HaltAndCatchFire();
 
-            var bufferLength = Marshal.SizeOf<byte>();
-            var buffer = stackalloc byte[bufferLength];
+            int bufferLength = Marshal.SizeOf<byte>();
+            byte* buffer = stackalloc byte[bufferLength];
 
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlGetActive,
                 null,
@@ -174,13 +177,15 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
 
             return buffer[0] > 0;
         }
         set
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -192,12 +197,12 @@ public sealed class HidHideControlService : IHidHideControlService
 
             handle.HaltAndCatchFire();
 
-            var bufferLength = Marshal.SizeOf<byte>();
-            var buffer = stackalloc byte[bufferLength];
+            int bufferLength = Marshal.SizeOf<byte>();
+            byte* buffer = stackalloc byte[bufferLength];
 
             buffer[0] = value ? (byte)1 : (byte)0;
 
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetActive,
                 buffer,
@@ -209,7 +214,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
         }
     }
 
@@ -219,18 +226,20 @@ public sealed class HidHideControlService : IHidHideControlService
         get
         {
             // query for required buffer size (in characters)
-            var ret = PInvoke.CM_Get_Device_Interface_List_Size(
-                out var length,
+            CONFIGRET ret = PInvoke.CM_Get_Device_Interface_List_Size(
+                out uint length,
                 DeviceInterface,
                 null,
                 PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
             );
 
             if (ret != CONFIGRET.CR_SUCCESS)
+            {
                 throw new HidHideDetectionFailedException();
+            }
 
             // allocate required bytes (wide characters)
-            var buffer = Marshal.AllocHGlobal((int)length * 2);
+            IntPtr buffer = Marshal.AllocHGlobal((int)length * 2);
 
             try
             {
@@ -244,10 +253,12 @@ public sealed class HidHideControlService : IHidHideControlService
                 );
 
                 if (ret != CONFIGRET.CR_SUCCESS)
+                {
                     throw new HidHideDetectionFailedException();
+                }
 
                 // convert to managed string
-                var firstInstanceId = new string((char*)buffer.ToPointer());
+                string firstInstanceId = new((char*)buffer.ToPointer());
 
                 // if HidHide is not loaded, the returned list will be empty
                 return !string.IsNullOrEmpty(firstInstanceId);
@@ -264,7 +275,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -276,10 +287,10 @@ public sealed class HidHideControlService : IHidHideControlService
 
             handle.HaltAndCatchFire();
 
-            var bufferLength = Marshal.SizeOf<byte>();
-            var buffer = stackalloc byte[bufferLength];
+            int bufferLength = Marshal.SizeOf<byte>();
+            byte* buffer = stackalloc byte[bufferLength];
 
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlGetWlInverse,
                 null,
@@ -291,13 +302,15 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
 
             return buffer[0] > 0;
         }
         set
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -309,12 +322,12 @@ public sealed class HidHideControlService : IHidHideControlService
 
             handle.HaltAndCatchFire();
 
-            var bufferLength = Marshal.SizeOf<byte>();
-            var buffer = stackalloc byte[bufferLength];
+            int bufferLength = Marshal.SizeOf<byte>();
+            byte* buffer = stackalloc byte[bufferLength];
 
             buffer[0] = value ? (byte)1 : (byte)0;
 
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWlInverse,
                 buffer,
@@ -326,7 +339,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
         }
     }
 
@@ -335,7 +350,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -356,7 +371,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -375,11 +390,11 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddBlockedInstanceId(string instanceId)
     {
-        var buffer = IntPtr.Zero;
+        IntPtr buffer = IntPtr.Zero;
 
         try
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -397,13 +412,15 @@ public sealed class HidHideControlService : IHidHideControlService
                     instanceId
                 })
                 .Distinct() // Remove duplicates, if any
-                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+                .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
+            {
                 throw new HidHideBufferOverflowException();
+            }
 
             // Submit new list
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
                 buffer.ToPointer(),
@@ -415,7 +432,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
         }
         finally
         {
@@ -426,11 +445,11 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveBlockedInstanceId(string instanceId)
     {
-        var buffer = IntPtr.Zero;
+        IntPtr buffer = IntPtr.Zero;
 
         try
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -445,13 +464,15 @@ public sealed class HidHideControlService : IHidHideControlService
             buffer = GetBlockedInstances(handle)
                 .Where(i => !i.Equals(instanceId, StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
-                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+                .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
+            {
                 throw new HidHideBufferOverflowException();
+            }
 
             // Submit new list
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
                 buffer.ToPointer(),
@@ -463,7 +484,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
         }
         finally
         {
@@ -474,13 +497,13 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearBlockedInstancesList()
     {
-        var buffer = IntPtr.Zero;
+        IntPtr buffer = IntPtr.Zero;
 
         try
         {
-            buffer = Array.Empty<string>().StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+            buffer = Array.Empty<string>().StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -493,7 +516,7 @@ public sealed class HidHideControlService : IHidHideControlService
             handle.HaltAndCatchFire();
 
             // Submit new list
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
                 buffer.ToPointer(),
@@ -505,7 +528,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
         }
         finally
         {
@@ -516,11 +541,11 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddApplicationPath(string path)
     {
-        var buffer = IntPtr.Zero;
+        IntPtr buffer = IntPtr.Zero;
 
         try
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -539,13 +564,15 @@ public sealed class HidHideControlService : IHidHideControlService
                 })
                 .Distinct() // Remove duplicates, if any
                 .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
-                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+                .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
+            {
                 throw new HidHideBufferOverflowException();
+            }
 
             // Submit new list
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
                 buffer.ToPointer(),
@@ -557,7 +584,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
         }
         finally
         {
@@ -568,11 +597,11 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveApplicationPath(string path)
     {
-        var buffer = IntPtr.Zero;
+        IntPtr buffer = IntPtr.Zero;
 
         try
         {
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -588,13 +617,15 @@ public sealed class HidHideControlService : IHidHideControlService
                 .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
                 .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
-                .StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+                .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
+            {
                 throw new HidHideBufferOverflowException();
+            }
 
             // Submit new list
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
                 buffer.ToPointer(),
@@ -606,7 +637,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
         }
         finally
         {
@@ -617,13 +650,13 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearApplicationsList()
     {
-        var buffer = IntPtr.Zero;
+        IntPtr buffer = IntPtr.Zero;
 
         try
         {
-            buffer = Array.Empty<string>().StringArrayToMultiSzPointer(out var length); // Convert to usable buffer
+            buffer = Array.Empty<string>().StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
-            using var handle = PInvoke.CreateFile(
+            using SafeFileHandle handle = PInvoke.CreateFile(
                 ControlDeviceFilename,
                 FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -636,7 +669,7 @@ public sealed class HidHideControlService : IHidHideControlService
             handle.HaltAndCatchFire();
 
             // Submit new list
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
                 buffer.ToPointer(),
@@ -648,7 +681,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
         }
         finally
         {
@@ -658,14 +693,14 @@ public sealed class HidHideControlService : IHidHideControlService
 
     private static unsafe IReadOnlyList<string> GetApplications(SafeHandle handle)
     {
-        var buffer = IntPtr.Zero;
+        IntPtr buffer = IntPtr.Zero;
 
         try
         {
             uint required = 0;
 
             // Get required buffer size
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlGetWhitelist,
                 null,
@@ -677,10 +712,14 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
 
             if (required >= short.MaxValue)
+            {
                 throw new HidHideBufferOverflowException();
+            }
 
             buffer = Marshal.AllocHGlobal((int)required);
 
@@ -698,7 +737,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
 
             // Store existing block-list in a more manageable "C#" fashion
             return buffer
@@ -714,14 +755,14 @@ public sealed class HidHideControlService : IHidHideControlService
 
     private static unsafe IReadOnlyList<string> GetBlockedInstances(SafeHandle handle)
     {
-        var buffer = IntPtr.Zero;
+        IntPtr buffer = IntPtr.Zero;
 
         try
         {
             uint required = 0;
 
             // Get required buffer size
-            var ret = PInvoke.DeviceIoControl(
+            BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlGetBlacklist,
                 null,
@@ -733,10 +774,14 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
 
             if (required >= short.MaxValue)
+            {
                 throw new HidHideBufferOverflowException();
+            }
 
             buffer = Marshal.AllocHGlobal((int)required);
 
@@ -753,7 +798,9 @@ public sealed class HidHideControlService : IHidHideControlService
             );
 
             if (!ret)
+            {
                 throw new HidHideRequestFailedException();
+            }
 
             // Store existing block-list in a more manageable "C#" fashion
             return buffer.MultiSzPointerToStringArray((int)required).ToList();
