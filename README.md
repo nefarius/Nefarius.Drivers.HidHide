@@ -106,3 +106,8 @@ public interface IHidHideControlService
     void ClearApplicationsList();
 }
 ```
+
+## 3rd party sources
+
+- [C#/Win32 P/Invoke Source Generator](https://github.com/microsoft/CsWin32)
+- [GitVersion](https://gitversion.net/)
