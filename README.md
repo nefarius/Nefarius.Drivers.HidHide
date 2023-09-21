@@ -4,7 +4,7 @@
 
 [![.NET](https://github.com/nefarius/Nefarius.Drivers.HidHide/actions/workflows/build.yml/badge.svg)](https://github.com/nefarius/Nefarius.Drivers.HidHide/actions/workflows/build.yml) ![Requirements](https://img.shields.io/badge/Requires-.NET%206%2F7-blue.svg) ![Requirements](https://img.shields.io/badge/Requires-.NET%20Standard%202.0-blue.svg) [![Nuget](https://img.shields.io/nuget/v/Nefarius.Drivers.HidHide)](https://www.nuget.org/packages/Nefarius.Drivers.HidHide/) [![Nuget](https://img.shields.io/nuget/dt/Nefarius.Drivers.HidHide)](https://www.nuget.org/packages/Nefarius.Drivers.HidHide/)
 
-Managed API for configuring [HidHide](https://github.com/ViGEm/HidHide).
+Managed API for configuring [HidHide](https://github.com/nefarius/HidHide).
 
 ## Usage
 
