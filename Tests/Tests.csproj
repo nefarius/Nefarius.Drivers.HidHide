@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nefarius.Drivers.HidHide.csproj" />
+    <ProjectReference Include="..\src\Nefarius.Drivers.HidHide.csproj" />
   </ItemGroup>
 
 </Project>
