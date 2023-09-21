@@ -142,20 +142,6 @@ public sealed class HidHideControlService : IHidHideControlService
     /// </summary>
     public static Guid DeviceInterface => Guid.Parse("{0C320FF7-BD9B-42B6-BDAF-49FEB9C91649}");
 
-    private static void HaltAndCatchFire(SafeFileHandle handle)
-    {
-        if(!handle.IsInvalid || handle.IsClosed)
-            return;
-
-        switch ((WIN32_ERROR)Marshal.GetLastWin32Error())
-        {
-            case WIN32_ERROR.ERROR_ACCESS_DENIED:
-                throw new HidHideDriverAccessFailedException();
-            case WIN32_ERROR.ERROR_NOT_FOUND:
-                throw new HidHideDriverNotFoundException();
-        }
-    }
-
     /// <inheritdoc />
     public unsafe bool IsActive
     {
