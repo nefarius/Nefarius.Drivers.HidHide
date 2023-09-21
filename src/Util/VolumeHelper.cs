@@ -86,7 +86,8 @@ public static class VolumeHelper
     /// <returns>The normalized path.</returns>
     private static string NormalizePath(string path)
     {
-        return Path.GetFullPath(new Uri(path).LocalPath)
+        return Path
+            .GetFullPath(new Uri(path).LocalPath)
             .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
             .ToUpperInvariant();
     }
@@ -110,7 +111,8 @@ public static class VolumeHelper
             throw new ArgumentException("Failed to translate provided path");
         }
 
-        string relativePath = devicePath.Replace(mapping.DevicePath, string.Empty)
+        string relativePath = devicePath
+            .Replace(mapping.DevicePath, string.Empty)
             .TrimStart(Path.DirectorySeparatorChar);
 
         return Path.Combine(mapping.DriveLetter, relativePath);
@@ -149,7 +151,8 @@ public static class VolumeHelper
                 continue;
             }
 
-            devicePath = GetVolumeMappings().FirstOrDefault(m =>
+            devicePath = GetVolumeMappings()
+                .FirstOrDefault(m =>
                     !string.IsNullOrEmpty(m.DriveLetter) &&
                     NormalizePath(m.DriveLetter) == NormalizePath(current.FullName))
                 ?.DevicePath;
@@ -163,7 +166,8 @@ public static class VolumeHelper
         if (string.IsNullOrEmpty(devicePath))
         {
             string driveLetter = Path.GetPathRoot(pathPart);
-            devicePath = GetVolumeMappings().FirstOrDefault(m =>
+            devicePath = GetVolumeMappings()
+                .FirstOrDefault(m =>
                 m.DriveLetter.Equals(driveLetter, StringComparison.InvariantCultureIgnoreCase))?.DevicePath;
             pathNoRoot = pathPart.Substring(Path.GetPathRoot(pathPart).Length);
         }
