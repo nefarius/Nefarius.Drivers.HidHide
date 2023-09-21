@@ -14,11 +14,11 @@ internal static class SafeFileHandleExtensions
     /// <param name="handle">The handle to test.</param>
     /// <exception cref="HidHideDriverAccessFailedException"></exception>
     /// <exception cref="HidHideDriverNotFoundException"></exception>
-    internal static void HaltAndCatchFire(this SafeFileHandle handle)
+    internal static SafeFileHandle HaltAndCatchFireOnError(this SafeFileHandle handle)
     {
         if (!handle.IsInvalid || handle.IsClosed)
         {
-            return;
+            return handle;
         }
 
         switch ((WIN32_ERROR)Marshal.GetLastWin32Error())
@@ -28,5 +28,7 @@ internal static class SafeFileHandleExtensions
             case WIN32_ERROR.ERROR_NOT_FOUND:
                 throw new HidHideDriverNotFoundException();
         }
+        
+        return handle;
     }
 }

@@ -150,9 +150,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             int bufferLength = Marshal.SizeOf<byte>();
             byte* buffer = stackalloc byte[bufferLength];
@@ -177,9 +175,7 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         set
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             int bufferLength = Marshal.SizeOf<byte>();
             byte* buffer = stackalloc byte[bufferLength];
@@ -259,9 +255,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             int bufferLength = Marshal.SizeOf<byte>();
             byte* buffer = stackalloc byte[bufferLength];
@@ -286,9 +280,7 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         set
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             int bufferLength = Marshal.SizeOf<byte>();
             byte* buffer = stackalloc byte[bufferLength];
@@ -318,9 +310,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             return GetBlockedInstances(handle);
         }
@@ -331,9 +321,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             return GetApplications(handle);
         }
@@ -346,9 +334,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             buffer = GetBlockedInstances(handle)
                 .Concat(new[] // Add our own instance paths to the existing list
@@ -393,9 +379,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             buffer = GetBlockedInstances(handle)
                 .Where(i => !i.Equals(instanceId, StringComparison.OrdinalIgnoreCase))
@@ -439,9 +423,7 @@ public sealed class HidHideControlService : IHidHideControlService
         {
             buffer = Array.Empty<string>().StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             // Submit new list
             BOOL ret = PInvoke.DeviceIoControl(
@@ -473,9 +455,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             buffer = GetApplications(handle)
                 .Concat(new[] // Add our own instance paths to the existing list
@@ -521,9 +501,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
         try
         {
-            using SafeFileHandle handle = OpenControlDeviceHandle();
-
-            handle.HaltAndCatchFire();
+            using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             buffer = GetApplications(handle)
                 .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
@@ -570,7 +548,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             using SafeFileHandle handle = OpenControlDeviceHandle();
 
-            handle.HaltAndCatchFire();
+            handle.HaltAndCatchFireOnError();
 
             // Submit new list
             BOOL ret = PInvoke.DeviceIoControl(
