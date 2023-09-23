@@ -1,5 +1,14 @@
 ﻿using Nefarius.Drivers.HidHide;
 
-var hh = new HidHideControlService();
+HidHideControlService hh = new HidHideControlService();
 
-Console.WriteLine($"IsInstalled: {hh.IsInstalled}");
+while (true)
+{
+    try
+    {
+        Console.WriteLine($"IsActive: {hh.IsActive}");
+    }
+    catch (HidHideDriverAccessFailedException) { }
+
+    Thread.Sleep(100);
+}
