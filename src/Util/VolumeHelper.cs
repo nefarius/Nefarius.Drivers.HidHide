@@ -127,7 +127,7 @@ public static class VolumeHelper
     {
         if (!File.Exists(path))
         {
-            throw new ArgumentException("The supplied file path doesn't exist", nameof(path));
+            throw new ArgumentException($"The supplied file path {path} doesn't exist", nameof(path));
         }
 
         string filePart = Path.GetFileName(path);
@@ -135,7 +135,7 @@ public static class VolumeHelper
 
         if (string.IsNullOrEmpty(pathPart))
         {
-            throw new IOException("Couldn't resolve directory");
+            throw new IOException($"Couldn't resolve directory of path {path}");
         }
 
         string pathNoRoot = string.Empty;
@@ -174,7 +174,7 @@ public static class VolumeHelper
 
         if (string.IsNullOrEmpty(devicePath))
         {
-            throw new IOException("Couldn't resolve device path");
+            throw new IOException($"Couldn't resolve device path of path {path}");
         }
 
         StringBuilder fullDevicePath = new();
