@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using Windows.Win32;
-using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.Foundation;
 
 namespace Nefarius.Drivers.HidHide.Util;
 
@@ -14,6 +15,8 @@ namespace Nefarius.Drivers.HidHide.Util;
 /// </summary>
 public static class VolumeHelper
 {
+    private static readonly Regex ExtractDevicePathPrefixRegex = new(@"^(\\Device\\HarddiskVolume\d*)\\.*");
+
     /// <summary>
     ///     Curates and returns a collection of volume to path mappings.
     /// </summary>
@@ -28,7 +31,7 @@ public static class VolumeHelper
         fixed (char* pPathName = pathName)
         fixed (char* pMountPoint = mountPoint)
         {
-            var volumeHandle = PInvoke.FindFirstVolume(pVolumeName, ushort.MaxValue);
+            HANDLE volumeHandle = PInvoke.FindFirstVolume(pVolumeName, ushort.MaxValue);
 
             List<VolumeMeta> list = new();
 
@@ -57,12 +60,14 @@ public static class VolumeHelper
                     continue;
                 }
 
-                list.Add(new VolumeMeta
+                VolumeMeta entry = new()
                 {
                     DriveLetter = new string(mountPoint).TrimEnd('\0'),
                     VolumeName = volume,
                     DevicePath = new string(pathName).TrimEnd('\0')
-                });
+                };
+
+                list.Add(entry);
             } while (PInvoke.FindNextVolume(volumeHandle, pVolumeName, ushort.MaxValue));
 
             return list.ToArray();
@@ -103,8 +108,17 @@ public static class VolumeHelper
         // TODO: cover and test junctions!
         // 
 
+        Match prefixMatch = ExtractDevicePathPrefixRegex.Match(devicePath);
+
+        if (!prefixMatch.Success)
+        {
+            throw new ArgumentException("Failed to parse provided device path prefix");
+        }
+
+        string prefix = prefixMatch.Groups[1].Value;
+
         VolumeMeta mapping = GetVolumeMappings()
-            .FirstOrDefault(m => devicePath.Contains(m.DevicePath));
+            .SingleOrDefault(m => prefix.Equals(m.DevicePath));
 
         if (mapping is null)
         {
@@ -168,7 +182,7 @@ public static class VolumeHelper
             string driveLetter = Path.GetPathRoot(pathPart);
             devicePath = GetVolumeMappings()
                 .FirstOrDefault(m =>
-                m.DriveLetter.Equals(driveLetter, StringComparison.InvariantCultureIgnoreCase))?.DevicePath;
+                    m.DriveLetter.Equals(driveLetter, StringComparison.InvariantCultureIgnoreCase))?.DevicePath;
             pathNoRoot = pathPart.Substring(Path.GetPathRoot(pathPart).Length);
         }
 

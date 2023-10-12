@@ -2,13 +2,6 @@
 
 HidHideControlService hh = new HidHideControlService();
 
-while (true)
-{
-    try
-    {
-        Console.WriteLine($"IsActive: {hh.IsActive}");
-    }
-    catch (HidHideDriverAccessFailedException) { }
+var t = hh.ApplicationPaths.ToList();
 
-    Thread.Sleep(100);
-}
+hh.AddApplicationPath(@"F:\Downloads\windowsdesktop-runtime-7.0.12-win-x64.exe");
