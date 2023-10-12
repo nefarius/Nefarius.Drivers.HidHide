@@ -166,7 +166,7 @@ public static class VolumeHelper
             }
 
             devicePath = GetVolumeMappings()
-                .FirstOrDefault(m =>
+                .SingleOrDefault(m =>
                     !string.IsNullOrEmpty(m.DriveLetter) &&
                     NormalizePath(m.DriveLetter) == NormalizePath(current.FullName))
                 ?.DevicePath;
@@ -181,9 +181,9 @@ public static class VolumeHelper
         {
             string driveLetter = Path.GetPathRoot(pathPart);
             devicePath = GetVolumeMappings()
-                .FirstOrDefault(m =>
+                .SingleOrDefault(m =>
                     m.DriveLetter.Equals(driveLetter, StringComparison.InvariantCultureIgnoreCase))?.DevicePath;
-            pathNoRoot = pathPart.Substring(Path.GetPathRoot(pathPart).Length);
+            pathNoRoot = pathPart.Substring(Path.GetPathRoot(pathPart)!.Length);
         }
 
         if (string.IsNullOrEmpty(devicePath))
