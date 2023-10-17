@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -101,8 +102,9 @@ public static class VolumeHelper
     ///     Translates a "DOS device" path to user-land path.
     /// </summary>
     /// <param name="devicePath">The DOS device path to convert.</param>
+    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns empty string.</param>
     /// <returns>The user-land path.</returns>
-    public static string DosDevicePathToPath(string devicePath)
+    public static string? DosDevicePathToPath(string devicePath, bool throwOnError = true)
     {
         //
         // TODO: cover and test junctions!
@@ -112,17 +114,27 @@ public static class VolumeHelper
 
         if (!prefixMatch.Success)
         {
-            throw new ArgumentException("Failed to parse provided device path prefix");
+            if (throwOnError)
+            {
+                throw new ArgumentException("Failed to parse provided device path prefix");
+            }
+
+            return null;
         }
 
         string prefix = prefixMatch.Groups[1].Value;
 
-        VolumeMeta mapping = GetVolumeMappings()
+        VolumeMeta? mapping = GetVolumeMappings()
             .SingleOrDefault(m => prefix.Equals(m.DevicePath));
 
         if (mapping is null)
         {
-            throw new ArgumentException("Failed to translate provided path");
+            if (throwOnError)
+            {
+                throw new ArgumentException("Failed to translate provided path");
+            }
+
+            return null;
         }
 
         string relativePath = devicePath
@@ -136,27 +148,38 @@ public static class VolumeHelper
     ///     Translates a user-land file path to "DOS device" path.
     /// </summary>
     /// <param name="path">The file path in normal namespace format.</param>
+    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns empty string.</param>
     /// <returns>The device namespace path (DOS device).</returns>
-    public static string PathToDosDevicePath(string path)
+    public static string? PathToDosDevicePath(string path, bool throwOnError = true)
     {
         if (!File.Exists(path))
         {
-            throw new ArgumentException($"The supplied file path {path} doesn't exist", nameof(path));
+            if (throwOnError)
+            {
+                throw new ArgumentException($"The supplied file path {path} doesn't exist", nameof(path));
+            }
+
+            return null;
         }
 
         string filePart = Path.GetFileName(path);
-        string pathPart = Path.GetDirectoryName(path);
+        string? pathPart = Path.GetDirectoryName(path);
 
         if (string.IsNullOrEmpty(pathPart))
         {
-            throw new IOException($"Couldn't resolve directory of path {path}");
+            if (throwOnError)
+            {
+                throw new IOException($"Couldn't resolve directory of path {path}");
+            }
+
+            return null;
         }
 
         string pathNoRoot = string.Empty;
-        string devicePath = string.Empty;
+        string? devicePath = string.Empty;
 
         // Walk up the directory tree to get the "deepest" potential junction
-        for (DirectoryInfo current = new(pathPart);
+        for (DirectoryInfo? current = new(pathPart);
              current is { Exists: true };
              current = Directory.GetParent(current.FullName))
         {
@@ -179,7 +202,7 @@ public static class VolumeHelper
         // No junctions found, translate original path
         if (string.IsNullOrEmpty(devicePath))
         {
-            string driveLetter = Path.GetPathRoot(pathPart);
+            string driveLetter = Path.GetPathRoot(pathPart)!;
             devicePath = GetVolumeMappings()
                 .SingleOrDefault(m =>
                     m.DriveLetter.Equals(driveLetter, StringComparison.InvariantCultureIgnoreCase))?.DevicePath;
@@ -188,7 +211,12 @@ public static class VolumeHelper
 
         if (string.IsNullOrEmpty(devicePath))
         {
-            throw new IOException($"Couldn't resolve device path of path {path}");
+            if (throwOnError)
+            {
+                throw new IOException($"Couldn't resolve device path of path {path}");
+            }
+
+            return null;
         }
 
         StringBuilder fullDevicePath = new();
@@ -202,10 +230,10 @@ public static class VolumeHelper
 
     private class VolumeMeta
     {
-        public string DriveLetter { get; set; }
+        public string DriveLetter { get; set; } = null!;
 
-        public string VolumeName { get; set; }
+        public string VolumeName { get; set; } = null!;
 
-        public string DevicePath { get; set; }
+        public string DevicePath { get; set; } = null!;
     }
 }

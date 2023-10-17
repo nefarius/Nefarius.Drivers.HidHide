@@ -463,7 +463,8 @@ public sealed class HidHideControlService : IHidHideControlService
                     path
                 })
                 .Distinct() // Remove duplicates, if any
-                .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
+                .Select(p => VolumeHelper.PathToDosDevicePath(p, false)) // re-convert to dos paths
+                .Where(r => !string.IsNullOrEmpty(r)) // strip invalid entries
                 .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
@@ -506,7 +507,8 @@ public sealed class HidHideControlService : IHidHideControlService
             buffer = GetApplications(handle)
                 .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
-                .Select(VolumeHelper.PathToDosDevicePath) // re-convert to dos paths
+                .Select(p => VolumeHelper.PathToDosDevicePath(p, false)) // re-convert to dos paths
+                .Where(r => !string.IsNullOrEmpty(r)) // strip invalid entries
                 .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
@@ -639,7 +641,8 @@ public sealed class HidHideControlService : IHidHideControlService
             // Store existing block-list in a more manageable "C#" fashion
             return buffer
                 .MultiSzPointerToStringArray((int)required)
-                .Select(VolumeHelper.DosDevicePathToPath)
+                .Select(p => VolumeHelper.DosDevicePathToPath(p, false))
+                .Where(r => !string.IsNullOrEmpty(r))
                 .ToList();
         }
         finally
