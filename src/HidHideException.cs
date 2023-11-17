@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 using Windows.Win32;
+using Windows.Win32.Devices.DeviceAndDriverInstallation;
 using Windows.Win32.System.Diagnostics.Debug;
 
 namespace Nefarius.Drivers.HidHide;
@@ -107,8 +108,14 @@ public sealed class HidHideRequestFailedException : HidHideException
 /// </summary>
 public sealed class HidHideDetectionFailedException : HidHideException
 {
-    internal HidHideDetectionFailedException() : base(
+    internal HidHideDetectionFailedException(CONFIGRET result) : base(
         "Interface lookup failed. Check the 'NativeErrorCode' and 'NativeErrorMessage' property for more details.")
     {
+        LastResult = (int)result;
     }
+
+    /// <summary>
+    ///     The <see cref="CONFIGRET" /> of the failing call.
+    /// </summary>
+    public int LastResult { get; }
 }

@@ -215,7 +215,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             if (ret != CONFIGRET.CR_SUCCESS)
             {
-                throw new HidHideDetectionFailedException();
+                throw new HidHideDetectionFailedException(ret);
             }
 
             // allocate required bytes (wide characters)
@@ -234,7 +234,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
                 if (ret != CONFIGRET.CR_SUCCESS)
                 {
-                    throw new HidHideDetectionFailedException();
+                    throw new HidHideDetectionFailedException(ret);
                 }
 
                 // convert to managed string
