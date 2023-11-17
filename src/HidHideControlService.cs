@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using Windows.Win32;
@@ -221,6 +222,7 @@ public sealed class HidHideControlService : IHidHideControlService
             reAlloc:
             // allocate required bytes (wide characters)
             IntPtr buffer = Marshal.AllocHGlobal((int)length * 2);
+            Unsafe.InitBlockUnaligned(buffer.ToPointer(), 0, length * 2);
 
             try
             {
