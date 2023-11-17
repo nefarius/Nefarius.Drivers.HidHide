@@ -218,6 +218,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideDetectionFailedException(ret);
             }
 
+            reAlloc:
             // allocate required bytes (wide characters)
             IntPtr buffer = Marshal.AllocHGlobal((int)length * 2);
 
@@ -231,6 +232,16 @@ public sealed class HidHideControlService : IHidHideControlService
                     length,
                     PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
                 );
+
+                // see: https://learn.microsoft.com/en-us/windows/win32/api/cfgmgr32/nf-cfgmgr32-cm_get_device_interface_lista#remarks
+                if (ret == CONFIGRET.CR_BUFFER_SMALL)
+                {
+                    // prepare for trouble...
+                    Marshal.FreeHGlobal(buffer);
+                    // ...and make it double!
+                    length *= 2;
+                    goto reAlloc;
+                }
 
                 if (ret != CONFIGRET.CR_SUCCESS)
                 {
