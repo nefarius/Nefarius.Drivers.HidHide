@@ -109,7 +109,7 @@ public sealed class HidHideRequestFailedException : HidHideException
 public sealed class HidHideDetectionFailedException : HidHideException
 {
     internal HidHideDetectionFailedException(CONFIGRET result) : base(
-        "Interface lookup failed. Check the 'NativeErrorCode' and 'NativeErrorMessage' property for more details.")
+        "Interface lookup failed. Check the 'LastResult', 'NativeErrorCode' and 'NativeErrorMessage' property for more details.")
     {
         LastResult = (int)result;
     }
