@@ -14,7 +14,7 @@ public class Tests
     {
         var service = new HidHideControlService();
 
-        Assert.True(service.IsActive);
+        Assert.That(service.IsActive, Is.True);
     }
 
     [Test]
@@ -22,7 +22,7 @@ public class Tests
     {
         var service = new HidHideControlService();
 
-        Assert.True(service.IsAppListInverted);
+        Assert.That(service.IsAppListInverted, Is.True);
     }
 
     [Test]
@@ -39,6 +39,6 @@ public class Tests
 
         var list = service.ApplicationPaths.ToList();
 
-        Assert.Contains(fileName, list);
+        Assert.That(list, Contains.Item(fileName));
     }
 }
