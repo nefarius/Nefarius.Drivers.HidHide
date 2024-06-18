@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -10,6 +11,7 @@ using Windows.Win32.Devices.DeviceAndDriverInstallation;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 
 using Nefarius.Drivers.HidHide.Util;
@@ -113,6 +115,25 @@ public interface IHidHideControlService
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public sealed class HidHideControlService : IHidHideControlService
 {
+    private readonly ILoggerFactory? _loggerFactory;
+    private readonly ILogger<HidHideControlService>? _logger;
+
+    /// <summary>
+    ///     Creates a new instance of <see cref="HidHideControlService"/> that is DI-aware.
+    /// </summary>
+    /// <param name="loggerFactory">Injects a logging factory.</param>
+    public HidHideControlService(ILoggerFactory loggerFactory)
+    {
+        _loggerFactory = loggerFactory;
+        _logger = _loggerFactory.CreateLogger<HidHideControlService>();
+    }
+    
+    /// <summary>
+    ///     Creates a new instance of <see cref="HidHideControlService"/> that is not DI-aware.
+    /// </summary>
+    /// <remarks>If the caller uses a dependency injection framework, do not instantiate this class directly.</remarks>
+    public HidHideControlService(){}
+    
     private const uint IoControlDeviceType = 32769;
 
     private const string ControlDeviceFilename = "\\\\.\\HidHide";
@@ -476,7 +497,7 @@ public sealed class HidHideControlService : IHidHideControlService
                     path
                 })
                 .Distinct() // Remove duplicates, if any
-                .Select(p => VolumeHelper.PathToDosDevicePath(p, false)) // re-convert to dos paths
+                .Select(p => new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>()).PathToDosDevicePath(p, false)) // re-convert to dos paths
                 .Where(r => !string.IsNullOrEmpty(r)) // strip invalid entries
                 .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
@@ -520,7 +541,7 @@ public sealed class HidHideControlService : IHidHideControlService
             buffer = GetApplications(handle)
                 .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
-                .Select(p => VolumeHelper.PathToDosDevicePath(p, false)) // re-convert to dos paths
+                .Select(p => new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>()).PathToDosDevicePath(p, false)) // re-convert to dos paths
                 .Where(r => !string.IsNullOrEmpty(r)) // strip invalid entries
                 .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
@@ -601,7 +622,7 @@ public sealed class HidHideControlService : IHidHideControlService
         );
     }
 
-    private static unsafe IReadOnlyList<string> GetApplications(SafeHandle handle)
+    private unsafe IReadOnlyList<string> GetApplications(SafeHandle handle)
     {
         IntPtr buffer = IntPtr.Zero;
 
@@ -654,7 +675,7 @@ public sealed class HidHideControlService : IHidHideControlService
             // Store existing block-list in a more manageable "C#" fashion
             return buffer
                 .MultiSzPointerToStringArray((int)required)
-                .Select(p => VolumeHelper.DosDevicePathToPath(p, false))
+                .Select(p => new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>()).DosDevicePathToPath(p, false))
                 .Where(r => !string.IsNullOrEmpty(r))
                 .ToList();
         }

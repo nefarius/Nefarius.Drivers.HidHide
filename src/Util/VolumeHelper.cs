@@ -9,13 +9,22 @@ using System.Text.RegularExpressions;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
+using Microsoft.Extensions.Logging;
+
 namespace Nefarius.Drivers.HidHide.Util;
 
 /// <summary>
 ///     Path manipulation and volume helper methods.
 /// </summary>
-public static class VolumeHelper
+internal class VolumeHelper
 {
+    private readonly ILogger<VolumeHelper>? _logger;
+
+    internal VolumeHelper(ILogger<VolumeHelper>? logger)
+    {
+        _logger = logger;
+    }
+    
     private static readonly Regex ExtractDevicePathPrefixRegex = new(@"^(\\Device\\HarddiskVolume\d*)\\.*");
 
     /// <summary>
@@ -104,7 +113,7 @@ public static class VolumeHelper
     /// <param name="devicePath">The DOS device path to convert.</param>
     /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns empty string.</param>
     /// <returns>The user-land path.</returns>
-    public static string? DosDevicePathToPath(string devicePath, bool throwOnError = true)
+    public string? DosDevicePathToPath(string devicePath, bool throwOnError = true)
     {
         //
         // TODO: cover and test junctions!
@@ -114,6 +123,9 @@ public static class VolumeHelper
 
         if (!prefixMatch.Success)
         {
+            _logger?.LogDebug("Prefix {Prefix} didn't match path {DevicePath}",
+                ExtractDevicePathPrefixRegex, devicePath);
+            
             if (throwOnError)
             {
                 throw new ArgumentException("Failed to parse provided device path prefix");
@@ -123,6 +135,7 @@ public static class VolumeHelper
         }
 
         string prefix = prefixMatch.Groups[1].Value;
+        _logger?.LogDebug("Extracted prefix: {Prefix}", prefix);
 
         VolumeMeta? mapping = GetVolumeMappings()
             .SingleOrDefault(m => prefix.Equals(m.DevicePath));
@@ -150,7 +163,7 @@ public static class VolumeHelper
     /// <param name="path">The file path in normal namespace format.</param>
     /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns empty string.</param>
     /// <returns>The device namespace path (DOS device).</returns>
-    public static string? PathToDosDevicePath(string path, bool throwOnError = true)
+    public string? PathToDosDevicePath(string path, bool throwOnError = true)
     {
         if (!File.Exists(path))
         {
