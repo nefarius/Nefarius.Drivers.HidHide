@@ -234,7 +234,7 @@ internal class VolumeHelper
         // No junctions found, translate original path
         if (string.IsNullOrEmpty(devicePath))
         {
-            _logger?.LogDebug("No junctions found for device path {DevicePath}, resolving directly", devicePath);
+            _logger?.LogDebug("No junctions found for path {Path}, resolving directly", path);
 
             string driveLetter = Path.GetPathRoot(pathPart)!;
             devicePath = GetVolumeMappings()
