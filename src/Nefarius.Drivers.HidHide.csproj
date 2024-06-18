@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net6-windows;net7-windows</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;net6-windows;net7-windows;net8-windows</TargetFrameworks>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -9,6 +9,10 @@
         <RepositoryUrl>https://github.com/nefarius/Nefarius.Drivers.HidHide</RepositoryUrl>
         <PackageProjectUrl>https://github.com/nefarius/Nefarius.Drivers.HidHide</PackageProjectUrl>
         <Description>Managed API for configuring HidHide.</Description>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <MinVerTagPrefix>v</MinVerTagPrefix>
     </PropertyGroup>
 
     <Import Project="$(SolutionDir)CommonProjectProperties.targets" />
@@ -26,7 +30,7 @@
         <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.18-beta">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+        <PackageReference Include="MinVer" Version="5.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
