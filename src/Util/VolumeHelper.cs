@@ -115,7 +115,7 @@ internal class VolumeHelper
     /// <returns>The user-land path.</returns>
     public string? DosDevicePathToPath(string devicePath, bool throwOnError = true)
     {
-        _logger?.LogDebug("Resolving DOS device path {DevicePath} to path", devicePath);
+        _logger?.LogDebug("++ Resolving DOS device path {DevicePath} to path", devicePath);
 
         //
         // TODO: cover and test junctions!
@@ -160,7 +160,7 @@ internal class VolumeHelper
 
         string fullPath = Path.Combine(mapping.DriveLetter, relativePath);
 
-        _logger?.LogDebug("Returning path {Path} for device path {DevicePath}", fullPath, devicePath);
+        _logger?.LogDebug("-- Returning path {Path} for device path {DevicePath}", fullPath, devicePath);
 
         return fullPath;
     }
@@ -173,7 +173,7 @@ internal class VolumeHelper
     /// <returns>The device namespace path (DOS device).</returns>
     public string? PathToDosDevicePath(string path, bool throwOnError = true)
     {
-        _logger?.LogDebug("Resolving path {Path} to DOS device path", path);
+        _logger?.LogDebug("++ Resolving path {Path} to DOS device path", path);
 
         if (!File.Exists(path))
         {
@@ -263,7 +263,7 @@ internal class VolumeHelper
         fullDevicePath.AppendFormat("{0}{1}", devicePath, Path.DirectorySeparatorChar);
         fullDevicePath.Append(Path.Combine(pathNoRoot, filePart).TrimStart(Path.DirectorySeparatorChar));
 
-        _logger?.LogDebug("Returning device path {DevicePath} for path {Path}", fullDevicePath, path);
+        _logger?.LogDebug("-- Returning device path {DevicePath} for path {Path}", fullDevicePath, path);
 
         return fullDevicePath.ToString();
     }
