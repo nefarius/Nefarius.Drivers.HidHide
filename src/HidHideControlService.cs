@@ -704,7 +704,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 .Select(p =>
                     new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>()).DosDevicePathToPath(p, false))
                 .Where(r => !string.IsNullOrEmpty(r))
-                .ToList();
+                .ToList()!;
         }
         finally
         {
