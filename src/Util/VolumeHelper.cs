@@ -154,6 +154,8 @@ internal class VolumeHelper
             .Replace(mapping.DevicePath, string.Empty)
             .TrimStart(Path.DirectorySeparatorChar);
 
+        _logger?.LogDebug("Built relative path: {Path}", relativePath);
+        
         return Path.Combine(mapping.DriveLetter, relativePath);
     }
 
@@ -167,6 +169,8 @@ internal class VolumeHelper
     {
         if (!File.Exists(path))
         {
+            _logger?.LogWarning("The provided path {Path} doesn't exist", path);
+            
             if (throwOnError)
             {
                 throw new ArgumentException($"The supplied file path {path} doesn't exist", nameof(path));
@@ -176,10 +180,14 @@ internal class VolumeHelper
         }
 
         string filePart = Path.GetFileName(path);
+        _logger?.LogDebug("File part: {File}", filePart);
         string? pathPart = Path.GetDirectoryName(path);
+        _logger?.LogDebug("Directory part: {Path}", pathPart);
 
         if (string.IsNullOrEmpty(pathPart))
         {
+            _logger?.LogWarning("Directory part of path was empty");
+            
             if (throwOnError)
             {
                 throw new IOException($"Couldn't resolve directory of path {path}");
