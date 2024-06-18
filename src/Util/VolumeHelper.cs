@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,14 +19,13 @@ namespace Nefarius.Drivers.HidHide.Util;
 /// </summary>
 internal class VolumeHelper
 {
+    private static readonly Regex ExtractDevicePathPrefixRegex = new(@"^(\\Device\\HarddiskVolume\d*)\\.*");
     private readonly ILogger<VolumeHelper>? _logger;
 
     internal VolumeHelper(ILogger<VolumeHelper>? logger)
     {
         _logger = logger;
     }
-    
-    private static readonly Regex ExtractDevicePathPrefixRegex = new(@"^(\\Device\\HarddiskVolume\d*)\\.*");
 
     /// <summary>
     ///     Curates and returns a collection of volume to path mappings.
@@ -125,7 +125,7 @@ internal class VolumeHelper
         {
             _logger?.LogDebug("Prefix {Prefix} didn't match path {DevicePath}",
                 ExtractDevicePathPrefixRegex, devicePath);
-            
+
             if (throwOnError)
             {
                 throw new ArgumentException("Failed to parse provided device path prefix");
@@ -155,7 +155,7 @@ internal class VolumeHelper
             .TrimStart(Path.DirectorySeparatorChar);
 
         _logger?.LogDebug("Built relative path: {Path}", relativePath);
-        
+
         return Path.Combine(mapping.DriveLetter, relativePath);
     }
 
@@ -170,7 +170,7 @@ internal class VolumeHelper
         if (!File.Exists(path))
         {
             _logger?.LogWarning("The provided path {Path} doesn't exist", path);
-            
+
             if (throwOnError)
             {
                 throw new ArgumentException($"The supplied file path {path} doesn't exist", nameof(path));
@@ -187,7 +187,7 @@ internal class VolumeHelper
         if (string.IsNullOrEmpty(pathPart))
         {
             _logger?.LogWarning("Directory part of path was empty");
-            
+
             if (throwOnError)
             {
                 throw new IOException($"Couldn't resolve directory of path {path}");
@@ -206,6 +206,7 @@ internal class VolumeHelper
         {
             if (!IsPathReparsePoint(current))
             {
+                _logger?.LogDebug("Path {Path} is not a reparse point", current);
                 continue;
             }
 
@@ -214,8 +215,10 @@ internal class VolumeHelper
                     !string.IsNullOrEmpty(m.DriveLetter) &&
                     NormalizePath(m.DriveLetter) == NormalizePath(current.FullName))
                 ?.DevicePath;
+            _logger?.LogDebug("Mapped current path node {Path} to device path {DevicePath}", current, devicePath);
 
             pathNoRoot = pathPart.Substring(current.FullName.Length);
+            _logger?.LogDebug("Set root-less path to {Path}", pathNoRoot);
 
             break;
         }
@@ -223,15 +226,21 @@ internal class VolumeHelper
         // No junctions found, translate original path
         if (string.IsNullOrEmpty(devicePath))
         {
+            _logger?.LogDebug("No junctions found for device path {DevicePath}, resolving directly", devicePath);
+
             string driveLetter = Path.GetPathRoot(pathPart)!;
             devicePath = GetVolumeMappings()
                 .SingleOrDefault(m =>
                     m.DriveLetter.Equals(driveLetter, StringComparison.InvariantCultureIgnoreCase))?.DevicePath;
+            _logger?.LogDebug("Mapped path {Path} to device path {DevicePath}", path, devicePath);
             pathNoRoot = pathPart.Substring(Path.GetPathRoot(pathPart)!.Length);
+            _logger?.LogDebug("Set root-less path to {Path}", pathNoRoot);
         }
 
         if (string.IsNullOrEmpty(devicePath))
         {
+            _logger?.LogWarning("Failed to resolve path {Path}", path);
+            
             if (throwOnError)
             {
                 throw new IOException($"Couldn't resolve device path of path {path}");
@@ -246,6 +255,8 @@ internal class VolumeHelper
         fullDevicePath.AppendFormat("{0}{1}", devicePath, Path.DirectorySeparatorChar);
         fullDevicePath.Append(Path.Combine(pathNoRoot, filePart).TrimStart(Path.DirectorySeparatorChar));
 
+        _logger?.LogDebug("Returning device path {DevicePath} for path {Path}", fullDevicePath, path);
+        
         return fullDevicePath.ToString();
     }
 
