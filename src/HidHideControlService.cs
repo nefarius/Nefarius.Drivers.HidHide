@@ -699,12 +699,16 @@ public sealed class HidHideControlService : IHidHideControlService
             }
 
             // Store existing block-list in a more manageable "C#" fashion
-            return buffer
+            var list = buffer
                 .MultiSzPointerToStringArray((int)required)
                 .Select(p =>
                     new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>()).DosDevicePathToPath(p, false))
                 .Where(r => !string.IsNullOrEmpty(r))
-                .ToList()!;
+                .ToList();
+
+            _logger?.LogDebug("Got applications: {@AppList}", list);
+            
+            return list!;
         }
         finally
         {
@@ -715,7 +719,7 @@ public sealed class HidHideControlService : IHidHideControlService
         }
     }
 
-    private static unsafe IReadOnlyList<string> GetBlockedInstances(SafeHandle handle)
+    private unsafe IReadOnlyList<string> GetBlockedInstances(SafeHandle handle)
     {
         IntPtr buffer = IntPtr.Zero;
 
@@ -765,7 +769,11 @@ public sealed class HidHideControlService : IHidHideControlService
             }
 
             // Store existing block-list in a more manageable "C#" fashion
-            return buffer.MultiSzPointerToStringArray((int)required).ToList();
+            var list = buffer.MultiSzPointerToStringArray((int)required).ToList();
+
+            _logger?.LogDebug("Got instanced: {@AppList}", list);
+            
+            return list;
         }
         finally
         {
