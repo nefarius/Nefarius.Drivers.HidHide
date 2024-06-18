@@ -699,7 +699,7 @@ public sealed class HidHideControlService : IHidHideControlService
             }
 
             // Store existing block-list in a more manageable "C#" fashion
-            var list = buffer
+            List<string?> list = buffer
                 .MultiSzPointerToStringArray((int)required)
                 .Select(p =>
                     new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>()).DosDevicePathToPath(p, false))
@@ -707,7 +707,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 .ToList();
 
             _logger?.LogDebug("Got applications: {@AppList}", list);
-            
+
             return list!;
         }
         finally
@@ -769,10 +769,10 @@ public sealed class HidHideControlService : IHidHideControlService
             }
 
             // Store existing block-list in a more manageable "C#" fashion
-            var list = buffer.MultiSzPointerToStringArray((int)required).ToList();
+            List<string> list = buffer.MultiSzPointerToStringArray((int)required).ToList();
 
             _logger?.LogDebug("Got instanced: {@AppList}", list);
-            
+
             return list;
         }
         finally
