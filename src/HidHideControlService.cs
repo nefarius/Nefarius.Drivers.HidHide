@@ -368,6 +368,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddBlockedInstanceId(string instanceId)
     {
+        _logger?.LogDebug("Adding instance: {Instance}", instanceId);
+        
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -416,6 +418,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveBlockedInstanceId(string instanceId)
     {
+        _logger?.LogDebug("Removing instance: {Instance}", instanceId);
+        
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -461,6 +465,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearBlockedInstancesList()
     {
+        _logger?.LogDebug("Clearing blocked instances list");
+        
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -498,6 +504,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddApplicationPath(string path)
     {
+        _logger?.LogDebug("Adding application: {Path}", path);
+        
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -550,6 +558,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveApplicationPath(string path)
     {
+        _logger?.LogDebug("Removing application: {Path}", path);
+        
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -599,6 +609,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearApplicationsList()
     {
+        _logger?.LogDebug("Clearing applications list");
+        
         IntPtr buffer = IntPtr.Zero;
 
         try
