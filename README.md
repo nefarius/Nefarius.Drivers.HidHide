@@ -10,7 +10,8 @@ Create an instance of `HidHideControlService` whenever you need it.
 
 You can use it as a singleton with dependency injection as well.
 
-This class **will not block other configuration apps** so you can keep it in memory as long as you need. A handle to the driver is only opened when necessary (when the properties are read from or the methods get invoked).
+This class **will not block other configuration apps** so you can keep it in memory as long as you need. A handle to the
+driver is only opened when necessary (when the properties are read from or the methods get invoked).
 
 The following methods and properties are available:
 
@@ -108,4 +109,4 @@ public interface IHidHideControlService
 ## 3rd party sources
 
 - [C#/Win32 P/Invoke Source Generator](https://github.com/microsoft/CsWin32)
-- [GitVersion](https://gitversion.net/)
+- [MinVer](https://github.com/adamralph/minver)
