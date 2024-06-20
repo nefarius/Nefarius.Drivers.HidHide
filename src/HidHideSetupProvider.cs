@@ -52,22 +52,31 @@ public sealed class HidHideSetupProvider
     /// <summary>
     ///     Fetches the latest setup download URL or null if not found.
     /// </summary>
-    public async Task<Uri?> GetLatestDownloadUrl(CancellationToken ct = default)
+    public async Task<Uri> GetLatestDownloadUrl(CancellationToken ct = default)
     {
         UpdateResponse? updates = await GetUpdateInformationAsync(ct);
 
         if (updates is null)
         {
-            return null;
+            throw new UpdateResponseEmptyException();
         }
 
-        string? location = updates.Releases.FirstOrDefault()?.DownloadUrl;
+        UpdateRelease? release = updates.Releases.FirstOrDefault();
+
+        if (release is null)
+        {
+            throw new MissingReleasesException();
+        }
+
+        string? location = release.DownloadUrl;
 
         if (string.IsNullOrEmpty(location))
         {
-            return null;
+            throw new DownloadLocationMissingException();
         }
 
-        return Uri.TryCreate(location, UriKind.Absolute, out Uri? uri) ? uri : null;
+        return Uri.TryCreate(location, UriKind.Absolute, out Uri? uri)
+            ? uri
+            : throw new MalformedUrlException();
     }
 }
