@@ -54,11 +54,20 @@ public sealed class HidHideSetupProvider
     /// </summary>
     public async Task<Uri> GetLatestDownloadUrl(CancellationToken ct = default)
     {
-        UpdateResponse? updates = await GetUpdateInformationAsync(ct);
+        UpdateResponse? updates;
+
+        try
+        {
+            updates = await GetUpdateInformationAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            throw new UpdateResponseMissingException(ex);
+        }
 
         if (updates is null)
         {
-            throw new UpdateResponseEmptyException();
+            throw new UpdateResponseMissingException();
         }
 
         UpdateRelease? release = updates.Releases.FirstOrDefault();

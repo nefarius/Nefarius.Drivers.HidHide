@@ -1,14 +1,15 @@
 ﻿using System;
-
-using Nefarius.Vicius.Abstractions.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Nefarius.Drivers.HidHide;
 
 /// <summary>
 ///     Describes a HidHide CDN server exception.
 /// </summary>
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public abstract class HidHideServerExceptions : Exception
 {
+    /// <inheritdoc />
     internal HidHideServerExceptions() { }
 
     internal HidHideServerExceptions(string message) : base(message)
@@ -21,11 +22,15 @@ public abstract class HidHideServerExceptions : Exception
 }
 
 /// <summary>
-///     A valid <see cref="UpdateResponse" /> wasn't returned.
+///     Update response object missing, couldn't be deserialized or server error. Check
+///     <see cref="Exception.InnerException" /> for details.
 /// </summary>
-public sealed class UpdateResponseEmptyException : HidHideServerExceptions
+public sealed class UpdateResponseMissingException : HidHideServerExceptions
 {
-    internal UpdateResponseEmptyException() : base("Update response object missing or couldn't be deserialized.") { }
+    internal UpdateResponseMissingException(Exception innerException = default) : base(
+        "Update response object missing, couldn't be deserialized or server error. Check InnerException for details.")
+    {
+    }
 }
 
 /// <summary>
