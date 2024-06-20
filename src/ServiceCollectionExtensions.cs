@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Nefarius.Drivers.HidHide;
@@ -14,6 +16,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddHidHide(this IServiceCollection services)
     {
         services.TryAddSingleton<IHidHideControlService, HidHideControlService>();
+
+        services.AddHttpClient<HidHideSetupProvider>(client =>
+        {
+            client.BaseAddress = new Uri("https://vicius.api.nefarius.systems/");
+        });
         
         return services;
     }
