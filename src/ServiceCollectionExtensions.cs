@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient<HidHideSetupProvider>(client =>
         {
             client.BaseAddress = new Uri("https://vicius.api.nefarius.systems/");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(nameof(HidHideSetupProvider));
         });
         
         return services;
