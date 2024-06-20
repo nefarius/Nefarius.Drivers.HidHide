@@ -4,7 +4,7 @@
 
 Managed API for configuring [HidHide](https://github.com/nefarius/HidHide).
 
-## Usage
+## Usage (classic)
 
 Create an instance of `HidHideControlService` whenever you need it.
 
@@ -105,6 +105,25 @@ public interface IHidHideControlService
     void ClearApplicationsList();
 }
 ```
+
+## Usage (dependency injection)
+
+If you plan to make use of Microsoft Dependency Injection (in ASP.NET Core, Worker Services and alike) and the online
+services, your app also need to add these NuGet packages:
+
+- `Microsoft.Extensions.Http`
+- `NJsonSchema`
+
+You can skip them for the "traditional" use of version 1 of the library. Register it like:
+
+```csharp
+builder.Services.AddHidHide();
+```
+
+Now you can inject and consume:
+
+- `IHidHideControlService` for the HidHide settings API
+- `HidHideSetupProvider` for update and download information
 
 ## 3rd party sources
 
