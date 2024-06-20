@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 
 using Nefarius.Drivers.HidHide;
+using Nefarius.Vicius.Abstractions.Models;
 
 namespace App;
 
@@ -17,10 +18,10 @@ public class DemoService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var updates = await _provider.GetUpdateInformationAsync(stoppingToken);
-        var url = await _provider.GetLatestDownloadUrl(stoppingToken);
-        
-        var t = _hh.ApplicationPaths.ToList();
+        UpdateResponse? updates = await _provider.GetUpdateInformationAsync(stoppingToken);
+        Uri url = await _provider.GetLatestDownloadUrlAsync(stoppingToken);
+
+        List<string> t = _hh.ApplicationPaths.ToList();
 
         _hh.AddApplicationPath(@"F:\Downloads\windowsdesktop-runtime-7.0.12-win-x64.exe");
     }

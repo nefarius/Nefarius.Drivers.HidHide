@@ -52,7 +52,7 @@ public sealed class HidHideSetupProvider
     /// <summary>
     ///     Fetches the latest setup download URL or null if not found.
     /// </summary>
-    public async Task<Uri> GetLatestDownloadUrl(CancellationToken ct = default)
+    public async Task<Uri> GetLatestDownloadUrlAsync(CancellationToken ct = default)
     {
         UpdateResponse? updates;
 
