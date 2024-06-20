@@ -123,6 +123,18 @@ Now you can inject and consume:
 - `IHidHideControlService` for the HidHide settings API
 - `HidHideSetupProvider` for update and download information
 
+## Documentation
+
+[Link to API docs](docs/index.md).
+
+### Generating documentation
+
+```PowerShell
+dotnet build -c:Release
+dotnet tool install --global Nefarius.Tools.XMLDoc2Markdown
+xmldoc2md .\bin\net7-windows\Nefarius.Drivers.HidHide.dll .\docs\
+```
+
 ## 3rd party sources
 
 - [C#/Win32 P/Invoke Source Generator](https://github.com/microsoft/CsWin32)
