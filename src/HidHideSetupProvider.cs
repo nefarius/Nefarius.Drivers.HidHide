@@ -134,4 +134,22 @@ public sealed class HidHideSetupProvider
 
         return release;
     }
+
+    /// <summary>
+    ///     Downloads the setup asset of the most recent <see cref="UpdateRelease" />.
+    /// </summary>
+    /// <param name="ct">Optional <see cref="CancellationToken" />.</param>
+    /// <returns>A <see cref="HttpResponseMessage" />.</returns>
+    /// <exception cref="UpdateResponseMissingException">
+    ///     Server didn't respond with a proper reply, see
+    ///     <see cref="Exception.InnerException" /> for details.
+    /// </exception>
+    /// <exception cref="MissingReleasesException">Mandatory releases collection was empty.</exception>
+    /// <exception cref="HttpRequestException">Server communication error occurred.</exception>
+    public async Task<HttpResponseMessage> DownloadLatestReleaseAsync(CancellationToken ct = default)
+    {
+        UpdateRelease release = await GetLatestReleaseAsync(ct);
+
+        return await _client.GetAsync(release.DownloadUrl, ct);
+    }
 }
