@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
+using Nefarius.Utilities.DeviceManagement.Exceptions;
+
 namespace Nefarius.Drivers.HidHide;
 
 /// <summary>
@@ -27,6 +29,12 @@ public interface IHidHideControlService
     ///     <see cref="HidHideException.NativeErrorMessage" /> for details.
     /// </exception>
     bool IsInstalled { get; }
+
+    /// <summary>
+    ///     Gets whether the virtual root-enumerated software device the driver attaches to is present on the system.
+    /// </summary>
+    /// <exception cref="ConfigManagerException">An unexpected enumeration error occurred.</exception>
+    bool IsDriverNodePresent { get; }
 
     /// <summary>
     ///     Gets or sets whether the application list is inverted (from block all/allow specific to allow all/block specific).

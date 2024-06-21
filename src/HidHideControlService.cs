@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 
 using Nefarius.Drivers.HidHide.Util;
+using Nefarius.Utilities.DeviceManagement.PnP;
 
 namespace Nefarius.Drivers.HidHide;
 
@@ -84,7 +85,7 @@ public sealed class HidHideControlService : IHidHideControlService
     ///     Hardware ID of the root-enumerated software node the driver attaches to.
     /// </summary>
     public static string HardwareId => @"Root\HidHide";
-    
+
     /// <inheritdoc />
     public unsafe bool IsActive
     {
@@ -204,6 +205,11 @@ public sealed class HidHideControlService : IHidHideControlService
             }
         }
     }
+
+    /// <inheritdoc />
+    public bool IsDriverNodePresent =>
+        Devcon.FindInDeviceClassByHardwareId(
+            DeviceClassIds.System, HardwareId);
 
     /// <inheritdoc />
     public unsafe bool IsAppListInverted
