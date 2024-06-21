@@ -26,6 +26,9 @@ builder.Logging.AddSerilog();
 builder.Services.AddHidHide(options =>
 {
     options.ProcessArchitecture = Architecture.Arm64;
+}, clientBuilder =>
+{
+    clientBuilder.AddStandardResilienceHandler();
 });
 
 // runs example code
