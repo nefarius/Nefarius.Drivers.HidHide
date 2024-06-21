@@ -18,9 +18,9 @@ public class DemoService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        UpdateResponse? updates = await _provider.GetUpdateInformationAsync(stoppingToken);
+        UpdateRelease release = await _provider.GetLatestReleaseAsync(stoppingToken);
         Uri url = await _provider.GetLatestDownloadUrlAsync(stoppingToken);
-        var version = await _provider.GetLatestVersionAsync(stoppingToken);
+        Version version = await _provider.GetLatestVersionAsync(stoppingToken);
 
         List<string> t = _hh.ApplicationPaths.ToList();
 
