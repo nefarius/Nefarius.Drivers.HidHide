@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -17,6 +18,7 @@ namespace Nefarius.Drivers.HidHide;
 /// <summary>
 ///     Service to locate the latest HidHide setup resources, update information etc.
 /// </summary>
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public sealed class HidHideSetupProvider
 {
     private readonly HttpClient _client;
@@ -54,7 +56,7 @@ public sealed class HidHideSetupProvider
     }
 
     /// <summary>
-    ///     Fetches the latest setup download URL or null if not found.
+    ///     Fetches the latest setup download URL.
     /// </summary>
     /// <exception cref="UpdateResponseMissingException">
     ///     Server didn't respond with a proper reply, see
@@ -64,6 +66,37 @@ public sealed class HidHideSetupProvider
     /// <exception cref="DownloadLocationMissingException">Mandatory release download location was missing.</exception>
     /// <exception cref="MalformedUrlException">Provided download URL was malformed.</exception>
     public async Task<Uri> GetLatestDownloadUrlAsync(CancellationToken ct = default)
+    {
+        UpdateRelease release = await GetLatestReleaseAsync(ct);
+
+        string location = release.DownloadUrl;
+
+        if (string.IsNullOrEmpty(location))
+        {
+            throw new DownloadLocationMissingException();
+        }
+
+        return Uri.TryCreate(location, UriKind.Absolute, out Uri? uri)
+            ? uri
+            : throw new MalformedUrlException();
+    }
+
+    /// <summary>
+    ///     Fetches the latest available version.
+    /// </summary>
+    /// <exception cref="UpdateResponseMissingException">
+    ///     Server didn't respond with a proper reply, see
+    ///     <see cref="Exception.InnerException" /> for details.
+    /// </exception>
+    /// <exception cref="MissingReleasesException">Mandatory releases collection was empty.</exception>
+    public async Task<Version> GetLatestVersionAsync(CancellationToken ct = default)
+    {
+        UpdateRelease release = await GetLatestReleaseAsync(ct);
+
+        return release.Version;
+    }
+
+    private async Task<UpdateRelease> GetLatestReleaseAsync(CancellationToken ct)
     {
         UpdateResponse? updates;
 
@@ -81,22 +114,13 @@ public sealed class HidHideSetupProvider
             throw new UpdateResponseMissingException();
         }
 
-        UpdateRelease? release = updates.Releases.FirstOrDefault();
+        UpdateRelease? release = updates.Releases.OrderByDescending(r => r.Version).FirstOrDefault();
 
         if (release is null)
         {
             throw new MissingReleasesException();
         }
 
-        string? location = release.DownloadUrl;
-
-        if (string.IsNullOrEmpty(location))
-        {
-            throw new DownloadLocationMissingException();
-        }
-
-        return Uri.TryCreate(location, UriKind.Absolute, out Uri? uri)
-            ? uri
-            : throw new MalformedUrlException();
+        return release;
     }
 }
