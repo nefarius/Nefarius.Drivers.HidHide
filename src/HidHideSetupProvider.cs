@@ -32,6 +32,10 @@ public sealed class HidHideSetupProvider
     /// <summary>
     ///     Fetches the <see cref="UpdateResponse" /> from the HidHide CDN server.
     /// </summary>
+    /// <exception cref="OperationCanceledException">
+    ///     The cancellation token was canceled. This exception is stored into the
+    ///     returned task.
+    /// </exception>
     public Task<UpdateResponse?> GetUpdateInformationAsync(CancellationToken ct = default)
     {
         JsonSerializerOptions opts = new()
@@ -52,6 +56,13 @@ public sealed class HidHideSetupProvider
     /// <summary>
     ///     Fetches the latest setup download URL or null if not found.
     /// </summary>
+    /// <exception cref="UpdateResponseMissingException">
+    ///     Server didn't respond with a proper reply, see
+    ///     <see cref="Exception.InnerException" /> for details.
+    /// </exception>
+    /// <exception cref="MissingReleasesException">Mandatory releases collection was empty.</exception>
+    /// <exception cref="DownloadLocationMissingException">Mandatory release download location was missing.</exception>
+    /// <exception cref="MalformedUrlException">Provided download URL was malformed.</exception>
     public async Task<Uri> GetLatestDownloadUrlAsync(CancellationToken ct = default)
     {
         UpdateResponse? updates;
