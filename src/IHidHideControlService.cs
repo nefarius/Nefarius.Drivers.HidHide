@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 using Nefarius.Utilities.DeviceManagement.Exceptions;
@@ -35,6 +36,16 @@ public interface IHidHideControlService
     /// </summary>
     /// <exception cref="ConfigManagerException">An unexpected enumeration error occurred.</exception>
     bool IsDriverNodePresent { get; }
+
+    /// <summary>
+    ///     Gets the local driver binary version.
+    /// </summary>
+    /// <exception cref="ConfigManagerException">An unexpected enumeration error occurred.</exception>
+    /// <exception cref="HidHideDriverNotFoundException">
+    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     faulty state.
+    /// </exception>
+    Version LocalDriverVersion { get; }
 
     /// <summary>
     ///     Gets or sets whether the application list is inverted (from block all/allow specific to allow all/block specific).

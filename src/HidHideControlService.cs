@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 
 using Nefarius.Drivers.HidHide.Util;
+using Nefarius.Utilities.DeviceManagement.Extensions;
 using Nefarius.Utilities.DeviceManagement.PnP;
 
 namespace Nefarius.Drivers.HidHide;
@@ -210,6 +211,24 @@ public sealed class HidHideControlService : IHidHideControlService
     public bool IsDriverNodePresent =>
         Devcon.FindInDeviceClassByHardwareId(
             DeviceClassIds.System, HardwareId);
+
+    /// <inheritdoc />
+    public Version LocalDriverVersion
+    {
+        get
+        {
+            if (!Devcon.FindInDeviceClassByHardwareId(
+                    DeviceClassIds.System, HardwareId,
+                    out IEnumerable<string> hhInstances)
+               )
+            {
+                throw new HidHideDriverNotFoundException();
+            }
+
+            PnPDevice virtualDevice = PnPDevice.GetDeviceByInstanceId(hhInstances.Single());
+            return virtualDevice.GetCurrentDriver().DriverVersion;
+        }
+    }
 
     /// <inheritdoc />
     public unsafe bool IsAppListInverted
