@@ -1,4 +1,6 @@
-﻿using App;
+﻿using System.Runtime.InteropServices;
+
+using App;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,7 +23,10 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.AddSerilog();
 
 // adds all injectable types as services
-builder.Services.AddHidHide();
+builder.Services.AddHidHide(options =>
+{
+    options.ProcessArchitecture = Architecture.Arm64;
+});
 
 // runs example code
 builder.Services.AddHostedService<DemoService>();
