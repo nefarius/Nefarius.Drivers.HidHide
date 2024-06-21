@@ -20,6 +20,8 @@
 
 - [HidHideServerExceptions](./nefarius.drivers.hidhide.hidhideserverexceptions.md)
 
+- [HidHideServiceOptions](./nefarius.drivers.hidhide.hidhideserviceoptions.md)
+
 - [HidHideSetupProvider](./nefarius.drivers.hidhide.hidhidesetupprovider.md)
 
 - [IHidHideControlService](./nefarius.drivers.hidhide.ihidhidecontrolservice.md)
