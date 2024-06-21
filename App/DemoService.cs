@@ -20,6 +20,7 @@ public class DemoService : BackgroundService
     {
         UpdateResponse? updates = await _provider.GetUpdateInformationAsync(stoppingToken);
         Uri url = await _provider.GetLatestDownloadUrlAsync(stoppingToken);
+        var version = await _provider.GetLatestVersionAsync(stoppingToken);
 
         List<string> t = _hh.ApplicationPaths.ToList();
 
