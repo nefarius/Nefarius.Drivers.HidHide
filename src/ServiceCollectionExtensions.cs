@@ -13,7 +13,7 @@ namespace Nefarius.Drivers.HidHide;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    ///     Registers <see cref="HidHideControlService" /> with DI.
+    ///     Registers <see cref="HidHideControlService" /> and <see cref="HidHideSetupProvider"/> with DI.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection" /> to modify.</param>
     /// <param name="options">Optional options to customize the registered HidHide services.</param>
