@@ -107,7 +107,7 @@ public sealed class HidHideSetupProvider
     /// </exception>
     /// <exception cref="MissingReleasesException">Mandatory releases collection was empty.</exception>
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-    public async Task<UpdateRelease> GetLatestReleaseAsync(CancellationToken ct)
+    public async Task<UpdateRelease> GetLatestReleaseAsync(CancellationToken ct = default)
     {
         UpdateResponse? updates;
 
