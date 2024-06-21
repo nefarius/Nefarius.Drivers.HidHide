@@ -38,6 +38,16 @@ public interface IHidHideControlService
     bool IsDriverNodePresent { get; }
 
     /// <summary>
+    ///     Gets whether the driver node is present and operational (has its device interface exposed).
+    /// </summary>
+    /// <exception cref="HidHideDetectionFailedException">
+    ///     Driver lookup has failed. See <see cref="HidHideException.NativeErrorCode" /> and
+    ///     <see cref="HidHideException.NativeErrorMessage" /> for details.
+    /// </exception>
+    /// <exception cref="ConfigManagerException">An unexpected enumeration error occurred.</exception>
+    bool IsOperational { get; }
+
+    /// <summary>
     ///     Gets the local driver binary version.
     /// </summary>
     /// <exception cref="ConfigManagerException">An unexpected enumeration error occurred.</exception>

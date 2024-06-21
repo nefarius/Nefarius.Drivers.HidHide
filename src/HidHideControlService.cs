@@ -213,6 +213,9 @@ public sealed class HidHideControlService : IHidHideControlService
             DeviceClassIds.System, HardwareId);
 
     /// <inheritdoc />
+    public bool IsOperational => IsInstalled && IsDriverNodePresent;
+
+    /// <inheritdoc />
     public Version LocalDriverVersion
     {
         get
