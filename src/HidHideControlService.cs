@@ -80,6 +80,11 @@ public sealed class HidHideControlService : IHidHideControlService
     /// </summary>
     public static Guid DeviceInterface => Guid.Parse("{0C320FF7-BD9B-42B6-BDAF-49FEB9C91649}");
 
+    /// <summary>
+    ///     Hardware ID of the root-enumerated software node the driver attaches to.
+    /// </summary>
+    public static string HardwareId => @"Root\HidHide";
+    
     /// <inheritdoc />
     public unsafe bool IsActive
     {
