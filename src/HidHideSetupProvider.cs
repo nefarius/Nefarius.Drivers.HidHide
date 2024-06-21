@@ -96,7 +96,18 @@ public sealed class HidHideSetupProvider
         return release.Version;
     }
 
-    private async Task<UpdateRelease> GetLatestReleaseAsync(CancellationToken ct)
+    /// <summary>
+    ///     Fetches the latest available release.
+    /// </summary>
+    /// <param name="ct">Optional <see cref="CancellationToken" />.</param>
+    /// <returns> The latest <see cref="UpdateRelease" /> available.</returns>
+    /// <exception cref="UpdateResponseMissingException">
+    ///     Server didn't respond with a proper reply, see
+    ///     <see cref="Exception.InnerException" /> for details.
+    /// </exception>
+    /// <exception cref="MissingReleasesException">Mandatory releases collection was empty.</exception>
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+    public async Task<UpdateRelease> GetLatestReleaseAsync(CancellationToken ct)
     {
         UpdateResponse? updates;
 
