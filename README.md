@@ -18,12 +18,16 @@ xmldoc2md .\bin\net7-windows\Nefarius.Drivers.HidHide.dll .\docs\
 
 ## Usage (classic)
 
+> This is the deprecated approach.
+
 Create an instance of `HidHideControlService` whenever you need it.
 
 This class **will not block other configuration apps** so you can keep it in memory as long as you need. A handle to the
 driver is only opened when necessary (when the properties are read from or the methods get invoked).
 
 ## Usage (dependency injection)
+
+> This is the recommended approach.
 
 If you plan to make use of Microsoft Dependency Injection (in ASP.NET Core, Worker Services and alike) and the online
 services, your app also need to add these NuGet packages:
@@ -41,6 +45,8 @@ Now you can inject and consume:
 
 - `IHidHideControlService` for the HidHide settings API
 - `HidHideSetupProvider` for update and download information
+
+Check the [demo app sources](./App) for implementation and usage details.
 
 ## 3rd party sources
 
