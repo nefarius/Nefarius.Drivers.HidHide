@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -10,102 +12,14 @@ using Windows.Win32.Devices.DeviceAndDriverInstallation;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 
 using Nefarius.Drivers.HidHide.Util;
+using Nefarius.Utilities.DeviceManagement.Extensions;
+using Nefarius.Utilities.DeviceManagement.PnP;
 
 namespace Nefarius.Drivers.HidHide;
-
-/// <summary>
-///     Provides a managed wrapper for communicating with HidHide driver.
-/// </summary>
-[SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
-[SuppressMessage("ReSharper", "UnusedMember.Global")]
-public interface IHidHideControlService
-{
-    /// <summary>
-    ///     Gets or sets whether global device hiding is currently active or not.
-    /// </summary>
-    bool IsActive { get; set; }
-
-    /// <summary>
-    ///     Gets whether the driver is present and operable.
-    /// </summary>
-    bool IsInstalled { get; }
-
-    /// <summary>
-    ///     Gets or sets whether the application list is inverted (from block all/allow specific to allow all/block specific).
-    /// </summary>
-    /// <remarks>
-    ///     The default behaviour of the application list is to block all processes by default and only treat listed paths
-    ///     as exempted.
-    /// </remarks>
-    bool IsAppListInverted { get; set; }
-
-    /// <summary>
-    ///     Returns list of currently blocked instance IDs.
-    /// </summary>
-    IReadOnlyList<string> BlockedInstanceIds { get; }
-
-    /// <summary>
-    ///     Returns list of currently allowed (or blocked, see <see cref="IsAppListInverted" />) application paths.
-    /// </summary>
-    IReadOnlyList<string> ApplicationPaths { get; }
-
-    /// <summary>
-    ///     Submit a new instance to block.
-    /// </summary>
-    /// <remarks>
-    ///     To get the instance ID from e.g. a symbolic link (device path) you can use this companion library:
-    ///     https://github.com/nefarius/Nefarius.Utilities.DeviceManagement
-    /// </remarks>
-    /// <param name="instanceId">The Instance ID to block.</param>
-    void AddBlockedInstanceId(string instanceId);
-
-    /// <summary>
-    ///     Remove an instance from being blocked.
-    /// </summary>
-    /// <remarks>
-    ///     To get the instance ID from e.g. a symbolic link (device path) you can use this companion library:
-    ///     https://github.com/nefarius/Nefarius.Utilities.DeviceManagement
-    /// </remarks>
-    /// <param name="instanceId">The Instance ID to unblock.</param>
-    void RemoveBlockedInstanceId(string instanceId);
-
-    /// <summary>
-    ///     Empties the device instances list. Useful if <see cref="AddBlockedInstanceId" /> or
-    ///     <see cref="BlockedInstanceIds" /> throw exceptions due to nonexistent entries.
-    /// </summary>
-    /// <remarks>
-    ///     Be very conservative in using this call, you might accidentally undo settings different apps have put in
-    ///     place.
-    /// </remarks>
-    void ClearBlockedInstancesList();
-
-    /// <summary>
-    ///     Submit a new application to allow (or deny if inverse flag is set).
-    /// </summary>
-    /// <remarks>Use the common local path notation (e.g. "C:\Windows\System32\rundll32.exe").</remarks>
-    /// <param name="path">The absolute application path to allow.</param>
-    void AddApplicationPath(string path);
-
-    /// <summary>
-    ///     Revokes an applications exemption.
-    /// </summary>
-    /// <remarks>Use the common local path notation (e.g. "C:\Windows\System32\rundll32.exe").</remarks>
-    /// <param name="path">The absolute application path to revoke.</param>
-    void RemoveApplicationPath(string path);
-
-    /// <summary>
-    ///     Empties the application list. Useful if <see cref="AddApplicationPath" /> or <see cref="ApplicationPaths" /> throw
-    ///     exceptions due to nonexistent entries.
-    /// </summary>
-    /// <remarks>
-    ///     Be very conservative in using this call, you might accidentally undo settings different apps have put in
-    ///     place.
-    /// </remarks>
-    void ClearApplicationsList();
-}
 
 /// <summary>
 ///     Provides a managed wrapper for communicating with HidHide driver.
@@ -141,10 +55,37 @@ public sealed class HidHideControlService : IHidHideControlService
     private static readonly uint IoctlSetWlInverse =
         CTL_CODE(IoControlDeviceType, 2055, PInvoke.METHOD_BUFFERED, FILE_ACCESS_RIGHTS.FILE_READ_DATA);
 
+    private readonly ILogger<HidHideControlService>? _logger;
+    private readonly ILoggerFactory? _loggerFactory;
+
+    /// <summary>
+    ///     Creates a new instance of <see cref="HidHideControlService" /> that is DI-aware.
+    /// </summary>
+    /// <param name="loggerFactory">Injects a logging factory.</param>
+    public HidHideControlService(ILoggerFactory loggerFactory)
+    {
+        _loggerFactory = loggerFactory;
+        _logger = _loggerFactory.CreateLogger<HidHideControlService>();
+    }
+
+    /// <summary>
+    ///     Creates a new instance of <see cref="HidHideControlService" /> that is not DI-aware.
+    /// </summary>
+    /// <remarks>
+    ///     If the caller uses a dependency injection framework, do not instantiate this class directly. Use
+    ///     <see cref="ServiceCollectionExtensions.AddHidHide" /> instead.
+    /// </remarks>
+    public HidHideControlService() { }
+
     /// <summary>
     ///     Interface GUID to enumerate HidHide devices.
     /// </summary>
     public static Guid DeviceInterface => Guid.Parse("{0C320FF7-BD9B-42B6-BDAF-49FEB9C91649}");
+
+    /// <summary>
+    ///     Hardware ID of the root-enumerated software node the driver attaches to.
+    /// </summary>
+    public static string HardwareId => @"Root\HidHide";
 
     /// <inheritdoc />
     public unsafe bool IsActive
@@ -258,8 +199,37 @@ public sealed class HidHideControlService : IHidHideControlService
             }
             finally
             {
-                Marshal.FreeHGlobal(buffer);
+                if (buffer != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(buffer);
+                }
             }
+        }
+    }
+
+    /// <inheritdoc />
+    public bool IsDriverNodePresent =>
+        Devcon.FindInDeviceClassByHardwareId(
+            DeviceClassIds.System, HardwareId);
+
+    /// <inheritdoc />
+    public bool IsOperational => IsInstalled && IsDriverNodePresent;
+
+    /// <inheritdoc />
+    public Version LocalDriverVersion
+    {
+        get
+        {
+            if (!Devcon.FindInDeviceClassByHardwareId(
+                    DeviceClassIds.System, HardwareId,
+                    out IEnumerable<string> hhInstances)
+               )
+            {
+                throw new HidHideDriverNotFoundException();
+            }
+
+            PnPDevice virtualDevice = PnPDevice.GetDeviceByInstanceId(hhInstances.Single());
+            return virtualDevice.GetCurrentDriver().DriverVersion;
         }
     }
 
@@ -343,6 +313,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddBlockedInstanceId(string instanceId)
     {
+        _logger?.LogDebug("Adding instance: {Instance}", instanceId);
+
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -381,13 +353,18 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         finally
         {
-            Marshal.FreeHGlobal(buffer);
+            if (buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 
     /// <inheritdoc />
     public unsafe void RemoveBlockedInstanceId(string instanceId)
     {
+        _logger?.LogDebug("Removing instance: {Instance}", instanceId);
+
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -423,13 +400,18 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         finally
         {
-            Marshal.FreeHGlobal(buffer);
+            if (buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 
     /// <inheritdoc />
     public unsafe void ClearBlockedInstancesList()
     {
+        _logger?.LogDebug("Clearing blocked instances list");
+
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -457,13 +439,18 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         finally
         {
-            Marshal.FreeHGlobal(buffer);
+            if (buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 
     /// <inheritdoc />
     public unsafe void AddApplicationPath(string path)
     {
+        _logger?.LogDebug("Adding application: {Path}", path);
+
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -476,7 +463,9 @@ public sealed class HidHideControlService : IHidHideControlService
                     path
                 })
                 .Distinct() // Remove duplicates, if any
-                .Select(p => VolumeHelper.PathToDosDevicePath(p, false)) // re-convert to dos paths
+                .Select(p =>
+                    new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>())
+                        .PathToDosDevicePath(p, false)) // re-convert to dos paths
                 .Where(r => !string.IsNullOrEmpty(r)) // strip invalid entries
                 .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
@@ -504,13 +493,18 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         finally
         {
-            Marshal.FreeHGlobal(buffer);
+            if (buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 
     /// <inheritdoc />
     public unsafe void RemoveApplicationPath(string path)
     {
+        _logger?.LogDebug("Removing application: {Path}", path);
+
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -520,7 +514,9 @@ public sealed class HidHideControlService : IHidHideControlService
             buffer = GetApplications(handle)
                 .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
                 .Distinct() // Remove duplicates, if any
-                .Select(p => VolumeHelper.PathToDosDevicePath(p, false)) // re-convert to dos paths
+                .Select(p =>
+                    new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>())
+                        .PathToDosDevicePath(p, false)) // re-convert to dos paths
                 .Where(r => !string.IsNullOrEmpty(r)) // strip invalid entries
                 .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
@@ -548,13 +544,18 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         finally
         {
-            Marshal.FreeHGlobal(buffer);
+            if (buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 
     /// <inheritdoc />
     public unsafe void ClearApplicationsList()
     {
+        _logger?.LogDebug("Clearing applications list");
+
         IntPtr buffer = IntPtr.Zero;
 
         try
@@ -584,7 +585,10 @@ public sealed class HidHideControlService : IHidHideControlService
         }
         finally
         {
-            Marshal.FreeHGlobal(buffer);
+            if (buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 
@@ -601,7 +605,7 @@ public sealed class HidHideControlService : IHidHideControlService
         );
     }
 
-    private static unsafe IReadOnlyList<string> GetApplications(SafeHandle handle)
+    private unsafe IReadOnlyList<string> GetApplications(SafeHandle handle)
     {
         IntPtr buffer = IntPtr.Zero;
 
@@ -652,19 +656,27 @@ public sealed class HidHideControlService : IHidHideControlService
             }
 
             // Store existing block-list in a more manageable "C#" fashion
-            return buffer
+            List<string?> list = buffer
                 .MultiSzPointerToStringArray((int)required)
-                .Select(p => VolumeHelper.DosDevicePathToPath(p, false))
+                .Select(p =>
+                    new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>()).DosDevicePathToPath(p, false))
                 .Where(r => !string.IsNullOrEmpty(r))
                 .ToList();
+
+            _logger?.LogDebug("Got applications: {@AppList}", list);
+
+            return list!;
         }
         finally
         {
-            Marshal.FreeHGlobal(buffer);
+            if (buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 
-    private static unsafe IReadOnlyList<string> GetBlockedInstances(SafeHandle handle)
+    private unsafe IReadOnlyList<string> GetBlockedInstances(SafeHandle handle)
     {
         IntPtr buffer = IntPtr.Zero;
 
@@ -714,11 +726,18 @@ public sealed class HidHideControlService : IHidHideControlService
             }
 
             // Store existing block-list in a more manageable "C#" fashion
-            return buffer.MultiSzPointerToStringArray((int)required).ToList();
+            List<string> list = buffer.MultiSzPointerToStringArray((int)required).ToList();
+
+            _logger?.LogDebug("Got instanced: {@AppList}", list);
+
+            return list;
         }
         finally
         {
-            Marshal.FreeHGlobal(buffer);
+            if (buffer != IntPtr.Zero)
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 
