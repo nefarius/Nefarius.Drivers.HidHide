@@ -25,9 +25,11 @@ builder.Logging.AddSerilog();
 // adds all injectable types as services
 builder.Services.AddHidHide(options =>
 {
+    // demonstrates overriding CPU architecture, default is auto-detect 
     options.ProcessArchitecture = Architecture.Arm64;
 }, clientBuilder =>
 {
+    // the HTTP client the library uses internally can be further customized
     clientBuilder.AddStandardResilienceHandler();
 });
 
