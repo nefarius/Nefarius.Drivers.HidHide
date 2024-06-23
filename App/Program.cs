@@ -26,7 +26,7 @@ builder.Logging.AddSerilog();
 builder.Services.AddHidHide(options =>
 {
     // demonstrates overriding CPU architecture, default is auto-detect 
-    options.ProcessArchitecture = Architecture.Arm64;
+    options.OSArchitecture = Architecture.Arm64;
 }, clientBuilder =>
 {
     // the HTTP client the library uses internally can be further customized

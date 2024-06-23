@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
             client.BaseAddress = new Uri("https://vicius.api.nefarius.systems/");
             client.DefaultRequestHeaders.UserAgent.ParseAdd(nameof(HidHideSetupProvider));
             client.DefaultRequestHeaders.Add("X-Vicius-OS-Architecture",
-                serviceOptions.ProcessArchitecture.ToString().ToLowerInvariant());
+                serviceOptions.OSArchitecture.ToString().ToLowerInvariant());
         });
 
         builder?.Invoke(clientBuilder);
