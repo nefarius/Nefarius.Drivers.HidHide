@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
+using Nefarius.Drivers.HidHide.Exceptions;
 using Nefarius.Utilities.DeviceManagement.Exceptions;
 
 namespace Nefarius.Drivers.HidHide;

@@ -26,6 +26,60 @@ public HidHideSetupProvider(HttpClient client)
 
 ## Methods
 
+### <a id="methods-downloadlatestreleaseasync"/>**DownloadLatestReleaseAsync(CancellationToken)**
+
+Downloads the setup asset of the most recent .
+
+```csharp
+public Task<HttpResponseMessage> DownloadLatestReleaseAsync(CancellationToken ct)
+```
+
+#### Parameters
+
+`ct` [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken)<br>
+Optional [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken).
+
+#### Returns
+
+A .
+
+#### Exceptions
+
+[UpdateResponseMissingException](./nefarius.drivers.hidhide.exceptions.updateresponsemissingexception.md)<br>
+Server didn't respond with a proper reply, see
+ [Exception.InnerException](https://docs.microsoft.com/en-us/dotnet/api/system.exception.innerexception) for details.
+
+[MissingReleasesException](./nefarius.drivers.hidhide.exceptions.missingreleasesexception.md)<br>
+Mandatory releases collection was empty.
+
+T:System.Net.Http.HttpRequestException<br>
+Server communication error occurred.
+
+### <a id="methods-downloadreleaseasync"/>**DownloadReleaseAsync(UpdateRelease, CancellationToken)**
+
+Downloads the setup asset of the provided .
+
+```csharp
+public Task<HttpResponseMessage> DownloadReleaseAsync(UpdateRelease release, CancellationToken ct)
+```
+
+#### Parameters
+
+`release` UpdateRelease<br>
+The  who's asset7setup should be downloaded.
+
+`ct` [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken)<br>
+Optional [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken).
+
+#### Returns
+
+on success.
+
+#### Exceptions
+
+T:System.Net.Http.HttpRequestException<br>
+Server communication error occurred.
+
 ### <a id="methods-getlatestdownloadurlasync"/>**GetLatestDownloadUrlAsync(CancellationToken)**
 
 Fetches the latest setup download URL.
@@ -44,17 +98,17 @@ public Task<Uri> GetLatestDownloadUrlAsync(CancellationToken ct)
 
 #### Exceptions
 
-[UpdateResponseMissingException](./nefarius.drivers.hidhide.updateresponsemissingexception.md)<br>
+[UpdateResponseMissingException](./nefarius.drivers.hidhide.exceptions.updateresponsemissingexception.md)<br>
 Server didn't respond with a proper reply, see
  [Exception.InnerException](https://docs.microsoft.com/en-us/dotnet/api/system.exception.innerexception) for details.
 
-[MissingReleasesException](./nefarius.drivers.hidhide.missingreleasesexception.md)<br>
+[MissingReleasesException](./nefarius.drivers.hidhide.exceptions.missingreleasesexception.md)<br>
 Mandatory releases collection was empty.
 
-[DownloadLocationMissingException](./nefarius.drivers.hidhide.downloadlocationmissingexception.md)<br>
+[DownloadLocationMissingException](./nefarius.drivers.hidhide.exceptions.downloadlocationmissingexception.md)<br>
 Mandatory release download location was missing.
 
-[MalformedUrlException](./nefarius.drivers.hidhide.malformedurlexception.md)<br>
+[MalformedUrlException](./nefarius.drivers.hidhide.exceptions.malformedurlexception.md)<br>
 Provided download URL was malformed.
 
 ### <a id="methods-getlatestreleaseasync"/>**GetLatestReleaseAsync(CancellationToken)**
@@ -76,11 +130,11 @@ The latest  available.
 
 #### Exceptions
 
-[UpdateResponseMissingException](./nefarius.drivers.hidhide.updateresponsemissingexception.md)<br>
+[UpdateResponseMissingException](./nefarius.drivers.hidhide.exceptions.updateresponsemissingexception.md)<br>
 Server didn't respond with a proper reply, see
  [Exception.InnerException](https://docs.microsoft.com/en-us/dotnet/api/system.exception.innerexception) for details.
 
-[MissingReleasesException](./nefarius.drivers.hidhide.missingreleasesexception.md)<br>
+[MissingReleasesException](./nefarius.drivers.hidhide.exceptions.missingreleasesexception.md)<br>
 Mandatory releases collection was empty.
 
 ### <a id="methods-getlatestversionasync"/>**GetLatestVersionAsync(CancellationToken)**
@@ -101,11 +155,11 @@ public Task<Version> GetLatestVersionAsync(CancellationToken ct)
 
 #### Exceptions
 
-[UpdateResponseMissingException](./nefarius.drivers.hidhide.updateresponsemissingexception.md)<br>
+[UpdateResponseMissingException](./nefarius.drivers.hidhide.exceptions.updateresponsemissingexception.md)<br>
 Server didn't respond with a proper reply, see
  [Exception.InnerException](https://docs.microsoft.com/en-us/dotnet/api/system.exception.innerexception) for details.
 
-[MissingReleasesException](./nefarius.drivers.hidhide.missingreleasesexception.md)<br>
+[MissingReleasesException](./nefarius.drivers.hidhide.exceptions.missingreleasesexception.md)<br>
 Mandatory releases collection was empty.
 
 ### <a id="methods-getupdateinformationasync"/>**GetUpdateInformationAsync(CancellationToken)**

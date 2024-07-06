@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Nefarius.Drivers.HidHide;
+namespace Nefarius.Drivers.HidHide.Exceptions;
 
 /// <summary>
 ///     Describes a HidHide CDN server exception.

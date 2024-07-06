@@ -6,7 +6,7 @@ using Windows.Win32;
 using Windows.Win32.Devices.DeviceAndDriverInstallation;
 using Windows.Win32.System.Diagnostics.Debug;
 
-namespace Nefarius.Drivers.HidHide;
+namespace Nefarius.Drivers.HidHide.Exceptions;
 
 /// <summary>
 ///     Describes a HidHide API exception.

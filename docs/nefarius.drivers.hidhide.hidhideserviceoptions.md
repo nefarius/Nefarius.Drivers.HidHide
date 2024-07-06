@@ -12,12 +12,12 @@ Inheritance [Object](https://docs.microsoft.com/en-us/dotnet/api/system.object) 
 
 ## Properties
 
-### <a id="properties-processarchitecture"/>**ProcessArchitecture**
+### <a id="properties-osarchitecture"/>**OSArchitecture**
 
 The processor/machine architecture to report to the CDN server.
 
 ```csharp
-public Architecture ProcessArchitecture { get; set; }
+public Architecture OSArchitecture { get; set; }
 ```
 
 #### Property Value

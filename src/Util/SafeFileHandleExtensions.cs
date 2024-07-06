@@ -4,6 +4,8 @@ using Windows.Win32.Foundation;
 
 using Microsoft.Win32.SafeHandles;
 
+using Nefarius.Drivers.HidHide.Exceptions;
+
 namespace Nefarius.Drivers.HidHide.Util;
 
 internal static class SafeFileHandleExtensions

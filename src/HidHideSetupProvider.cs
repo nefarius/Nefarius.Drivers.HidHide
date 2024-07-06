@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Nefarius.Drivers.HidHide.Exceptions;
 using Nefarius.Vicius.Abstractions.Converters;
 using Nefarius.Vicius.Abstractions.Models;
 

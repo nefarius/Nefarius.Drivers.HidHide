@@ -15,6 +15,7 @@ using Windows.Win32.Storage.FileSystem;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32.SafeHandles;
 
+using Nefarius.Drivers.HidHide.Exceptions;
 using Nefarius.Drivers.HidHide.Util;
 using Nefarius.Utilities.DeviceManagement.Extensions;
 using Nefarius.Utilities.DeviceManagement.PnP;

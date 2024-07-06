@@ -24,19 +24,19 @@ public abstract IReadOnlyList<String> ApplicationPaths { get; }
 
 #### Exceptions
 
-[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.hidhidedriveraccessfailedexception.md)<br>
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
 Failed to open handle to driver. Make sure no other process is
  using the API at the same time.
 
-[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.hidhidedrivernotfoundexception.md)<br>
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate driver. Make sure HidHide is installed and not in a
  faulty state.
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
-[HidHideBufferOverflowException](./nefarius.drivers.hidhide.hidhidebufferoverflowexception.md)<br>
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
 Buffer size exceeded maximum allowed characters. Happens when list
  grew out of supported bounds.
 
@@ -54,19 +54,19 @@ public abstract IReadOnlyList<String> BlockedInstanceIds { get; }
 
 #### Exceptions
 
-[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.hidhidedriveraccessfailedexception.md)<br>
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
 Failed to open handle to driver. Make sure no other process is
  using the API at the same time.
 
-[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.hidhidedrivernotfoundexception.md)<br>
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate driver. Make sure HidHide is installed and not in a
  faulty state.
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
-[HidHideBufferOverflowException](./nefarius.drivers.hidhide.hidhidebufferoverflowexception.md)<br>
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
 Buffer size exceeded maximum allowed characters. Happens when list
  grew out of supported bounds.
 
@@ -84,9 +84,9 @@ public abstract bool IsActive { get; set; }
 
 #### Exceptions
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
 ### <a id="properties-isapplistinverted"/>**IsAppListInverted**
 
@@ -102,9 +102,9 @@ public abstract bool IsAppListInverted { get; set; }
 
 #### Exceptions
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
 **Remarks:**
 
@@ -142,9 +142,9 @@ public abstract bool IsInstalled { get; }
 
 #### Exceptions
 
-[HidHideDetectionFailedException](./nefarius.drivers.hidhide.hidhidedetectionfailedexception.md)<br>
-Driver lookup has failed. See [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and
- [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+[HidHideDetectionFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedetectionfailedexception.md)<br>
+Driver lookup has failed. See [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and
+ [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
 ### <a id="properties-isoperational"/>**IsOperational**
 
@@ -160,9 +160,9 @@ public abstract bool IsOperational { get; }
 
 #### Exceptions
 
-[HidHideDetectionFailedException](./nefarius.drivers.hidhide.hidhidedetectionfailedexception.md)<br>
-Driver lookup has failed. See [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and
- [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+[HidHideDetectionFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedetectionfailedexception.md)<br>
+Driver lookup has failed. See [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and
+ [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
 T:Nefarius.Utilities.DeviceManagement.Exceptions.ConfigManagerException<br>
 An unexpected enumeration error occurred.
@@ -184,7 +184,7 @@ public abstract Version LocalDriverVersion { get; }
 T:Nefarius.Utilities.DeviceManagement.Exceptions.ConfigManagerException<br>
 An unexpected enumeration error occurred.
 
-[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.hidhidedrivernotfoundexception.md)<br>
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate driver. Make sure HidHide is installed and not in a
  faulty state.
 
@@ -205,19 +205,19 @@ The absolute application path to allow.
 
 #### Exceptions
 
-[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.hidhidedriveraccessfailedexception.md)<br>
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
 Failed to open handle to driver. Make sure no other process is
  using the API at the same time.
 
-[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.hidhidedrivernotfoundexception.md)<br>
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate driver. Make sure HidHide is installed and not in a
  faulty state.
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
-[HidHideBufferOverflowException](./nefarius.drivers.hidhide.hidhidebufferoverflowexception.md)<br>
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
 Buffer size exceeded maximum allowed characters. Happens when list
  grew out of supported bounds.
 
@@ -240,19 +240,19 @@ The Instance ID to block.
 
 #### Exceptions
 
-[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.hidhidedriveraccessfailedexception.md)<br>
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
 Failed to open handle to driver. Make sure no other process is
  using the API at the same time.
 
-[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.hidhidedrivernotfoundexception.md)<br>
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate driver. Make sure HidHide is installed and not in a
  faulty state.
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
-[HidHideBufferOverflowException](./nefarius.drivers.hidhide.hidhidebufferoverflowexception.md)<br>
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
 Buffer size exceeded maximum allowed characters. Happens when list
  grew out of supported bounds.
 
@@ -272,19 +272,19 @@ void ClearApplicationsList()
 
 #### Exceptions
 
-[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.hidhidedriveraccessfailedexception.md)<br>
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
 Failed to open handle to driver. Make sure no other process is
  using the API at the same time.
 
-[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.hidhidedrivernotfoundexception.md)<br>
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate driver. Make sure HidHide is installed and not in a
  faulty state.
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
-[HidHideBufferOverflowException](./nefarius.drivers.hidhide.hidhidebufferoverflowexception.md)<br>
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
 Buffer size exceeded maximum allowed characters. Happens when list
  grew out of supported bounds.
 
@@ -304,19 +304,19 @@ void ClearBlockedInstancesList()
 
 #### Exceptions
 
-[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.hidhidedriveraccessfailedexception.md)<br>
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
 Failed to open handle to driver. Make sure no other process is
  using the API at the same time.
 
-[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.hidhidedrivernotfoundexception.md)<br>
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate driver. Make sure HidHide is installed and not in a
  faulty state.
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
-[HidHideBufferOverflowException](./nefarius.drivers.hidhide.hidhidebufferoverflowexception.md)<br>
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
 Buffer size exceeded maximum allowed characters. Happens when list
  grew out of supported bounds.
 
@@ -340,19 +340,19 @@ The absolute application path to revoke.
 
 #### Exceptions
 
-[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.hidhidedriveraccessfailedexception.md)<br>
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
 Failed to open handle to driver. Make sure no other process is
  using the API at the same time.
 
-[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.hidhidedrivernotfoundexception.md)<br>
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate driver. Make sure HidHide is installed and not in a
  faulty state.
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
-[HidHideBufferOverflowException](./nefarius.drivers.hidhide.hidhidebufferoverflowexception.md)<br>
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
 Buffer size exceeded maximum allowed characters. Happens when list
  grew out of supported bounds.
 
@@ -375,19 +375,19 @@ The Instance ID to unblock.
 
 #### Exceptions
 
-[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.hidhidedriveraccessfailedexception.md)<br>
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
 Failed to open handle to driver. Make sure no other process is
  using the API at the same time.
 
-[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.hidhidedrivernotfoundexception.md)<br>
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate driver. Make sure HidHide is installed and not in a
  faulty state.
 
-[HidHideRequestFailedException](./nefarius.drivers.hidhide.hidhiderequestfailedexception.md)<br>
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
 Driver communication has failed. See
- [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.hidhideexception.md#nativeerrormessage) for details.
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
-[HidHideBufferOverflowException](./nefarius.drivers.hidhide.hidhidebufferoverflowexception.md)<br>
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
 Buffer size exceeded maximum allowed characters. Happens when list
  grew out of supported bounds.
 
