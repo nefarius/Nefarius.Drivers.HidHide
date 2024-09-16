@@ -93,6 +93,8 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            _logger?.LogDebug("Fetching active status");
+
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             int bufferLength = Marshal.SizeOf<byte>();
@@ -114,10 +116,14 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideRequestFailedException();
             }
 
+            _logger?.LogDebug("Got active status {IsActive}", buffer[0]);
+
             return buffer[0] > 0;
         }
         set
         {
+            _logger?.LogDebug("Setting active status to {IsActive}", value);
+
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             int bufferLength = Marshal.SizeOf<byte>();
@@ -148,6 +154,8 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            _logger?.LogDebug("Fetching installed status");
+
             // query for required buffer size (in characters)
             CONFIGRET ret = PInvoke.CM_Get_Device_Interface_List_Size(
                 out uint length,
@@ -196,7 +204,11 @@ public sealed class HidHideControlService : IHidHideControlService
                 string firstInstanceId = new((char*)buffer.ToPointer());
 
                 // if HidHide is not loaded, the returned list will be empty
-                return !string.IsNullOrEmpty(firstInstanceId);
+                bool isInstalled = !string.IsNullOrEmpty(firstInstanceId);
+
+                _logger?.LogDebug("Got installed status {IsInstalled}", isInstalled);
+
+                return isInstalled;
             }
             finally
             {
@@ -745,7 +757,7 @@ public sealed class HidHideControlService : IHidHideControlService
             // Store existing block-list in a more manageable "C#" fashion
             List<string> list = buffer.MultiSzPointerToStringArray((int)required).ToList();
 
-            _logger?.LogDebug("Got instanced: {@AppList}", list);
+            _logger?.LogDebug("Got instances: {@AppList}", list);
 
             return list;
         }
