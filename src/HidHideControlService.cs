@@ -294,11 +294,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using IDisposable? scope =
-                _logger?.BeginScope(new Dictionary<string, object>
-                {
-                    ["Context"] = "HidHide", ["SourceContext"] = "HidHide"
-                });
+            using IDisposable? scope = _logger?.StartScope();
 
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
@@ -311,11 +307,7 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
-            using IDisposable? scope =
-                _logger?.BeginScope(new Dictionary<string, object>
-                {
-                    ["Context"] = "HidHide", ["SourceContext"] = "HidHide"
-                });
+            using IDisposable? scope = _logger?.StartScope();
 
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
@@ -326,11 +318,7 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddBlockedInstanceId(string instanceId)
     {
-        using IDisposable? scope =
-            _logger?.BeginScope(new Dictionary<string, object>
-            {
-                ["Context"] = "HidHide", ["SourceContext"] = "HidHide"
-            });
+        using IDisposable? scope = _logger?.StartScope();
 
         _logger?.LogDebug("Adding instance: {Instance}", instanceId);
 
@@ -382,11 +370,7 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveBlockedInstanceId(string instanceId)
     {
-        using IDisposable? scope =
-            _logger?.BeginScope(new Dictionary<string, object>
-            {
-                ["Context"] = "HidHide", ["SourceContext"] = "HidHide"
-            });
+        using IDisposable? scope = _logger?.StartScope();
 
         _logger?.LogDebug("Removing instance: {Instance}", instanceId);
 
@@ -435,11 +419,7 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearBlockedInstancesList()
     {
-        using IDisposable? scope =
-            _logger?.BeginScope(new Dictionary<string, object>
-            {
-                ["Context"] = "HidHide", ["SourceContext"] = "HidHide"
-            });
+        using IDisposable? scope = _logger?.StartScope();
 
         _logger?.LogDebug("Clearing blocked instances list");
 
@@ -480,11 +460,7 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddApplicationPath(string path)
     {
-        using IDisposable? scope =
-            _logger?.BeginScope(new Dictionary<string, object>
-            {
-                ["Context"] = "HidHide", ["SourceContext"] = "HidHide"
-            });
+        using IDisposable? scope = _logger?.StartScope();
 
         _logger?.LogDebug("Adding application: {Path}", path);
 
@@ -540,11 +516,7 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveApplicationPath(string path)
     {
-        using IDisposable? scope =
-            _logger?.BeginScope(new Dictionary<string, object>
-            {
-                ["Context"] = "HidHide", ["SourceContext"] = "HidHide"
-            });
+        using IDisposable? scope = _logger?.StartScope();
 
         _logger?.LogDebug("Removing application: {Path}", path);
 
@@ -597,11 +569,7 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearApplicationsList()
     {
-        using IDisposable? scope =
-            _logger?.BeginScope(new Dictionary<string, object>
-            {
-                ["Context"] = "HidHide", ["SourceContext"] = "HidHide"
-            });
+        using IDisposable? scope = _logger?.StartScope();
 
         _logger?.LogDebug("Clearing applications list");
 
