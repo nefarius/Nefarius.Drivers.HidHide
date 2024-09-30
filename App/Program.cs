@@ -23,7 +23,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.AddSerilog();
 
 // adds all injectable types as services
-builder.Services.AddHidHide(options =>
+builder.Services.AddHidHide(options => // options are optional
 {
     // demonstrates overriding CPU architecture, default is auto-detect 
     options.OSArchitecture = Architecture.Arm64;

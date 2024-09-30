@@ -93,6 +93,8 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            _logger?.LogDebug("Fetching active status");
+
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             int bufferLength = Marshal.SizeOf<byte>();
@@ -114,10 +116,14 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideRequestFailedException();
             }
 
+            _logger?.LogDebug("Got active status {IsActive}", buffer[0]);
+
             return buffer[0] > 0;
         }
         set
         {
+            _logger?.LogDebug("Setting active status to {IsActive}", value);
+
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             int bufferLength = Marshal.SizeOf<byte>();
@@ -148,6 +154,8 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            _logger?.LogDebug("Fetching installed status");
+
             // query for required buffer size (in characters)
             CONFIGRET ret = PInvoke.CM_Get_Device_Interface_List_Size(
                 out uint length,
@@ -196,7 +204,11 @@ public sealed class HidHideControlService : IHidHideControlService
                 string firstInstanceId = new((char*)buffer.ToPointer());
 
                 // if HidHide is not loaded, the returned list will be empty
-                return !string.IsNullOrEmpty(firstInstanceId);
+                bool isInstalled = !string.IsNullOrEmpty(firstInstanceId);
+
+                _logger?.LogDebug("Got installed status {IsInstalled}", isInstalled);
+
+                return isInstalled;
             }
             finally
             {
@@ -294,6 +306,8 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            using IDisposable? scope = _logger?.StartScope();
+
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             return GetBlockedInstances(handle);
@@ -305,6 +319,8 @@ public sealed class HidHideControlService : IHidHideControlService
     {
         get
         {
+            using IDisposable? scope = _logger?.StartScope();
+
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             return GetApplications(handle);
@@ -314,6 +330,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddBlockedInstanceId(string instanceId)
     {
+        using IDisposable? scope = _logger?.StartScope();
+
         _logger?.LogDebug("Adding instance: {Instance}", instanceId);
 
         IntPtr buffer = IntPtr.Zero;
@@ -364,6 +382,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveBlockedInstanceId(string instanceId)
     {
+        using IDisposable? scope = _logger?.StartScope();
+
         _logger?.LogDebug("Removing instance: {Instance}", instanceId);
 
         IntPtr buffer = IntPtr.Zero;
@@ -411,6 +431,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearBlockedInstancesList()
     {
+        using IDisposable? scope = _logger?.StartScope();
+
         _logger?.LogDebug("Clearing blocked instances list");
 
         IntPtr buffer = IntPtr.Zero;
@@ -450,6 +472,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void AddApplicationPath(string path)
     {
+        using IDisposable? scope = _logger?.StartScope();
+
         _logger?.LogDebug("Adding application: {Path}", path);
 
         IntPtr buffer = IntPtr.Zero;
@@ -504,6 +528,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void RemoveApplicationPath(string path)
     {
+        using IDisposable? scope = _logger?.StartScope();
+
         _logger?.LogDebug("Removing application: {Path}", path);
 
         IntPtr buffer = IntPtr.Zero;
@@ -555,6 +581,8 @@ public sealed class HidHideControlService : IHidHideControlService
     /// <inheritdoc />
     public unsafe void ClearApplicationsList()
     {
+        using IDisposable? scope = _logger?.StartScope();
+
         _logger?.LogDebug("Clearing applications list");
 
         IntPtr buffer = IntPtr.Zero;
@@ -729,7 +757,7 @@ public sealed class HidHideControlService : IHidHideControlService
             // Store existing block-list in a more manageable "C#" fashion
             List<string> list = buffer.MultiSzPointerToStringArray((int)required).ToList();
 
-            _logger?.LogDebug("Got instanced: {@AppList}", list);
+            _logger?.LogDebug("Got instances: {@AppList}", list);
 
             return list;
         }
