@@ -161,7 +161,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 out uint length,
                 DeviceInterface,
                 null,
-                PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
+                CM_GET_DEVICE_INTERFACE_LIST_FLAGS.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
             );
 
             if (ret != CONFIGRET.CR_SUCCESS)
@@ -182,7 +182,7 @@ public sealed class HidHideControlService : IHidHideControlService
                     null,
                     new PZZWSTR((char*)buffer.ToPointer()),
                     length,
-                    PInvoke.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
+                    CM_GET_DEVICE_INTERFACE_LIST_FLAGS.CM_GET_DEVICE_INTERFACE_LIST_PRESENT
                 );
 
                 // see: https://learn.microsoft.com/en-us/windows/win32/api/cfgmgr32/nf-cfgmgr32-cm_get_device_interface_lista#remarks
