@@ -75,8 +75,8 @@ public interface IHidHideControlService
     ///     Returns list of currently blocked instance IDs.
     /// </summary>
     /// <exception cref="HidHideDriverAccessFailedException">
-    ///     Failed to open handle to driver. Make sure no other process is
-    ///     using the API at the same time.
+    ///     Failed to open a handle to the driver.
+    ///     Make sure no other process is using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
     ///     Failed to locate the driver. Make sure HidHide is installed and not in a
@@ -96,8 +96,8 @@ public interface IHidHideControlService
     ///     Returns list of currently allowed (or blocked, see <see cref="IsAppListInverted" />) application paths.
     /// </summary>
     /// <exception cref="HidHideDriverAccessFailedException">
-    ///     Failed to open handle to driver. Make sure no other process is
-    ///     using the API at the same time.
+    ///     Failed to open a handle to the driver.
+    ///     Make sure no other process is using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
     ///     Failed to locate the driver. Make sure HidHide is installed and not in a
@@ -122,8 +122,8 @@ public interface IHidHideControlService
     /// </remarks>
     /// <param name="instanceId">The Instance ID to block.</param>
     /// <exception cref="HidHideDriverAccessFailedException">
-    ///     Failed to open handle to driver. Make sure no other process is
-    ///     using the API at the same time.
+    ///     Failed to open a handle to the driver.
+    ///     Make sure no other process is using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
     ///     Failed to locate the driver. Make sure HidHide is installed and not in a
@@ -148,8 +148,8 @@ public interface IHidHideControlService
     /// </remarks>
     /// <param name="instanceId">The Instance ID to unblock.</param>
     /// <exception cref="HidHideDriverAccessFailedException">
-    ///     Failed to open handle to driver. Make sure no other process is
-    ///     using the API at the same time.
+    ///     Failed to open a handle to the driver.
+    ///     Make sure no other process is using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
     ///     Failed to locate the driver. Make sure HidHide is installed and not in a
