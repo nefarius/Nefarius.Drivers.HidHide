@@ -2,7 +2,7 @@
 
 Namespace: Nefarius.Drivers.HidHide.Exceptions
 
-Failed to locate driver. Make sure HidHide is installed and not in a faulty state.
+Failed to locate the driver. Make sure HidHide is installed and not in a faulty state.
 
 ```csharp
 public sealed class HidHideDriverNotFoundException : HidHideException, System.Runtime.Serialization.ISerializable

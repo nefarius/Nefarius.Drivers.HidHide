@@ -2,7 +2,7 @@
 
 Namespace: Nefarius.Drivers.HidHide.Exceptions
 
-Failed to open handle to driver. Make sure no other process is using the API at the same time.
+Failed to open a handle to the driver. Make sure no other process is using the API at the same time.
 
 ```csharp
 public sealed class HidHideDriverAccessFailedException : HidHideException, System.Runtime.Serialization.ISerializable
