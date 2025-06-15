@@ -2,7 +2,7 @@
 
 Namespace: Nefarius.Drivers.HidHide.Exceptions
 
-Buffer size exceeded maximum allowed characters.
+Buffer size exceeded the maximum allowed characters.
 
 ```csharp
 public sealed class HidHideBufferOverflowException : HidHideException, System.Runtime.Serialization.ISerializable
