@@ -12,7 +12,7 @@ internal class Tests
     [Test]
     public void TestIsActive()
     {
-        var service = new HidHideControlService();
+        HidHideControlService service = new();
 
         Assert.That(service.IsActive, Is.True);
     }
@@ -20,7 +20,7 @@ internal class Tests
     [Test]
     public void TestIsAppListInverted()
     {
-        var service = new HidHideControlService();
+        HidHideControlService service = new();
 
         Assert.That(service.IsAppListInverted, Is.True);
     }
@@ -28,16 +28,16 @@ internal class Tests
     [Test]
     public void TestAppList()
     {
-        var service = new HidHideControlService();
+        HidHideControlService service = new();
 
         service.ClearApplicationsList();
 
         // make sure this exists or an exception will be thrown
-        var fileName = @"F:\Downloads\amd-software-adrenalin-edition-22.10.1-minimalsetup-221003_web.exe";
+        const string fileName = @"F:\Downloads\amd-software-adrenalin-edition-22.10.1-minimalsetup-221003_web.exe";
 
         service.AddApplicationPath(fileName);
 
-        var list = service.ApplicationPaths.ToList();
+        List<string> list = service.ApplicationPaths.ToList();
 
         Assert.That(list, Contains.Item(fileName));
     }
