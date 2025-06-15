@@ -25,8 +25,8 @@ public abstract IReadOnlyList<String> ApplicationPaths { get; }
 #### Exceptions
 
 [HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
-Failed to open handle to driver. Make sure no other process is
- using the API at the same time.
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
 
 [HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate the driver. Make sure HidHide is installed and not in a
@@ -55,8 +55,8 @@ public abstract IReadOnlyList<String> BlockedInstanceIds { get; }
 #### Exceptions
 
 [HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
-Failed to open handle to driver. Make sure no other process is
- using the API at the same time.
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
 
 [HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate the driver. Make sure HidHide is installed and not in a
@@ -185,7 +185,7 @@ T:Nefarius.Utilities.DeviceManagement.Exceptions.ConfigManagerException<br>
 An unexpected enumeration error occurred.
 
 [HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
-Failed to locate driver. Make sure HidHide is installed and not in a
+Failed to locate the driver. Make sure HidHide is installed and not in a
  faulty state.
 
 ## Methods
@@ -244,8 +244,8 @@ The Instance ID to block.
 #### Exceptions
 
 [HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
-Failed to open handle to driver. Make sure no other process is
- using the API at the same time.
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
 
 [HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate the driver. Make sure HidHide is installed and not in a
@@ -379,8 +379,8 @@ The Instance ID to unblock.
 #### Exceptions
 
 [HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
-Failed to open handle to driver. Make sure no other process is
- using the API at the same time.
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
 
 [HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
 Failed to locate the driver. Make sure HidHide is installed and not in a
