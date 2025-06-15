@@ -196,6 +196,7 @@ public interface IHidHideControlService
     /// </summary>
     /// <remarks>Use the common local path notation (e.g. "C:\Windows\System32\rundll32.exe").</remarks>
     /// <param name="path">The absolute application path to allow.</param>
+    /// <param name="throwIfInvalid">Throws exception if an invalid (nonexistent) file path is supplied.</param>
     /// <exception cref="HidHideDriverAccessFailedException">
     ///     Failed to open a handle to the driver.
     ///     Make sure no other process is using the API at the same time.
@@ -215,7 +216,7 @@ public interface IHidHideControlService
     ///     It happens when the list
     ///     grew out of supported bounds.
     /// </exception>
-    void AddApplicationPath(string path);
+    void AddApplicationPath(string path, bool throwIfInvalid = true);
 
     /// <summary>
     ///     Revokes an applications exemption.

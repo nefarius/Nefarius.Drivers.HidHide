@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -467,9 +468,14 @@ public sealed class HidHideControlService : IHidHideControlService
     }
 
     /// <inheritdoc />
-    public unsafe void AddApplicationPath(string path)
+    public unsafe void AddApplicationPath(string path, bool throwIfInvalid = true)
     {
         using IDisposable? scope = _logger?.StartScope();
+
+        if (throwIfInvalid && !File.Exists(path))
+        {
+            throw new FileNotFoundException(path);
+        }
 
         _logger?.LogDebug("Adding application: {Path}", path);
 
