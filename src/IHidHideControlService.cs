@@ -53,7 +53,7 @@ public interface IHidHideControlService
     /// </summary>
     /// <exception cref="ConfigManagerException">An unexpected enumeration error occurred.</exception>
     /// <exception cref="HidHideDriverNotFoundException">
-    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     Failed to locate the driver. Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
     Version LocalDriverVersion { get; }
