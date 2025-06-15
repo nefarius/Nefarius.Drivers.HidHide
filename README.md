@@ -12,14 +12,6 @@ Managed API for configuring [HidHide](https://github.com/nefarius/HidHide).
 
 [Link to API docs](docs/index.md).
 
-### Generating documentation
-
-```PowerShell
-dotnet build -c:Release
-dotnet tool install --global Nefarius.Tools.XMLDoc2Markdown
-xmldoc2md .\bin\net7-windows\Nefarius.Drivers.HidHide.dll .\docs\
-```
-
 ## Usage (classic)
 
 > This is the deprecated approach.
