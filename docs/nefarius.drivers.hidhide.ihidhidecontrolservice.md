@@ -190,18 +190,21 @@ Failed to locate the driver. Make sure HidHide is installed and not in a
 
 ## Methods
 
-### <a id="methods-addapplicationpath"/>**AddApplicationPath(String)**
+### <a id="methods-addapplicationpath"/>**AddApplicationPath(String, Boolean)**
 
 Submit a new application to allow (or deny if the inverse flag is set).
 
 ```csharp
-void AddApplicationPath(string path)
+void AddApplicationPath(string path, bool throwIfInvalid)
 ```
 
 #### Parameters
 
 `path` [String](https://docs.microsoft.com/en-us/dotnet/api/system.string)<br>
 The absolute application path to allow.
+
+`throwIfInvalid` [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
+Throws exception if an invalid (nonexistent) file path is supplied.
 
 #### Exceptions
 
@@ -266,7 +269,7 @@ To get the instance ID from e.g. a symbolic link (device path) you can use this 
 
 ### <a id="methods-clearapplicationslist"/>**ClearApplicationsList()**
 
-Empties the application list. Useful if [IHidHideControlService.AddApplicationPath(String)](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#addapplicationpathstring) or [IHidHideControlService.ApplicationPaths](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#applicationpaths) throw
+Empties the application list. Useful if [IHidHideControlService.AddApplicationPath(String, Boolean)](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#addapplicationpathstring-boolean) or [IHidHideControlService.ApplicationPaths](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#applicationpaths) throw
  exceptions due to nonexistent entries.
 
 ```csharp

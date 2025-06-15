@@ -147,15 +147,17 @@ If the caller uses a dependency injection framework, do not instantiate this cla
 
 ## Methods
 
-### <a id="methods-addapplicationpath"/>**AddApplicationPath(String)**
+### <a id="methods-addapplicationpath"/>**AddApplicationPath(String, Boolean)**
 
 ```csharp
-public void AddApplicationPath(string path)
+public void AddApplicationPath(string path, bool throwIfInvalid)
 ```
 
 #### Parameters
 
 `path` [String](https://docs.microsoft.com/en-us/dotnet/api/system.string)<br>
+
+`throwIfInvalid` [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
 
 ### <a id="methods-addblockedinstanceid"/>**AddBlockedInstanceId(String)**
 
