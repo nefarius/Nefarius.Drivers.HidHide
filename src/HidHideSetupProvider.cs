@@ -20,6 +20,7 @@ namespace Nefarius.Drivers.HidHide;
 ///     Service to locate the latest HidHide setup resources, update information etc.
 /// </summary>
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public sealed class HidHideSetupProvider
 {
     private readonly HttpClient _client;
