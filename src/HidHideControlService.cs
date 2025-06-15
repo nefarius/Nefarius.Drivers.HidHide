@@ -341,10 +341,7 @@ public sealed class HidHideControlService : IHidHideControlService
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             buffer = GetBlockedInstances(handle)
-                .Concat(new[] // Add our own instance paths to the existing list
-                {
-                    instanceId
-                })
+                .Concat([instanceId]) // Add our own instance paths to the existing list
                 .Distinct() // Remove duplicates, if any
                 .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
@@ -353,7 +350,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideBufferOverflowException();
             }
 
-            // Submit new list
+            // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
@@ -402,7 +399,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideBufferOverflowException();
             }
 
-            // Submit new list
+            // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
@@ -443,7 +440,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
-            // Submit new list
+            // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetBlacklist,
@@ -483,10 +480,7 @@ public sealed class HidHideControlService : IHidHideControlService
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
             buffer = GetApplications(handle)
-                .Concat(new[] // Add our own instance paths to the existing list
-                {
-                    path
-                })
+                .Concat([path]) // Add our own instance paths to the existing list
                 .Distinct() // Remove duplicates, if any
                 .Select(p =>
                     new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>())
@@ -499,7 +493,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideBufferOverflowException();
             }
 
-            // Submit new list
+            // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
@@ -552,7 +546,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideBufferOverflowException();
             }
 
-            // Submit new list
+            // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
@@ -595,7 +589,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             handle.HaltAndCatchFireOnError();
 
-            // Submit new list
+            // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
                 handle,
                 IoctlSetWhitelist,
@@ -684,7 +678,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideRequestFailedException();
             }
 
-            // Store existing block-list in a more manageable "C#" fashion
+            // Store existing blocklist in a more manageable "C#" fashion
             List<string?> list = buffer
                 .MultiSzPointerToStringArray((int)required)
                 .Select(p =>
@@ -754,7 +748,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideRequestFailedException();
             }
 
-            // Store existing block-list in a more manageable "C#" fashion
+            // Store existing blocklist in a more manageable "C#" fashion
             List<string> list = buffer.MultiSzPointerToStringArray((int)required).ToList();
 
             _logger?.LogDebug("Got instances: {@AppList}", list);
@@ -770,7 +764,7 @@ public sealed class HidHideControlService : IHidHideControlService
         }
     }
 
-    private static UInt32 CTL_CODE(uint deviceType, uint function, uint method, FILE_ACCESS_RIGHTS access)
+    private static uint CTL_CODE(uint deviceType, uint function, uint method, FILE_ACCESS_RIGHTS access)
     {
         return (deviceType << 16) | ((uint)access << 14) | (function << 2) | method;
     }

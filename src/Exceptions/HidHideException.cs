@@ -57,6 +57,16 @@ public abstract class HidHideException : Exception
             return chars > 0 ? new string(buffer).TrimEnd('\r', '\n') : null;
         }
     }
+
+    /// <inheritdoc />
+    public override string Message {
+        get
+        {
+          return string.IsNullOrEmpty(NativeErrorMessage) 
+              ? base.Message 
+              : $"{base.Message}\r\nWin32 error: {NativeErrorMessage} ({NativeErrorCode})";   
+        } 
+    }
 }
 
 /// <summary>
