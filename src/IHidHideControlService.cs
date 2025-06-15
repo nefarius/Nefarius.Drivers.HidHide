@@ -62,7 +62,7 @@ public interface IHidHideControlService
     ///     Gets or sets whether the application list is inverted (from block all/allow specific to allow all/block specific).
     /// </summary>
     /// <remarks>
-    ///     The default behaviour of the application list is to block all processes by default and only treat listed paths
+    ///     The default behavior of the application list is to block all processes by default and only treat listed paths
     ///     as exempted.
     /// </remarks>
     /// <exception cref="HidHideRequestFailedException">
@@ -79,7 +79,7 @@ public interface IHidHideControlService
     ///     using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
-    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     Failed to locate the driver. Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
     /// <exception cref="HidHideRequestFailedException">
@@ -87,7 +87,7 @@ public interface IHidHideControlService
     ///     <see cref="HidHideException.NativeErrorCode" /> and <see cref="HidHideException.NativeErrorMessage" /> for details.
     /// </exception>
     /// <exception cref="HidHideBufferOverflowException">
-    ///     Buffer size exceeded maximum allowed characters. Happens when list
+    ///     Buffer size exceeded the maximum allowed characters. It happens when the list
     ///     grew out of supported bounds.
     /// </exception>
     IReadOnlyList<string> BlockedInstanceIds { get; }
@@ -100,7 +100,7 @@ public interface IHidHideControlService
     ///     using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
-    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     Failed to locate the driver. Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
     /// <exception cref="HidHideRequestFailedException">
@@ -108,7 +108,7 @@ public interface IHidHideControlService
     ///     <see cref="HidHideException.NativeErrorCode" /> and <see cref="HidHideException.NativeErrorMessage" /> for details.
     /// </exception>
     /// <exception cref="HidHideBufferOverflowException">
-    ///     Buffer size exceeded maximum allowed characters. Happens when list
+    ///     Buffer size exceeded the maximum allowed characters. It happens when the list
     ///     grew out of supported bounds.
     /// </exception>
     IReadOnlyList<string> ApplicationPaths { get; }
@@ -126,7 +126,7 @@ public interface IHidHideControlService
     ///     using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
-    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     Failed to locate the driver. Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
     /// <exception cref="HidHideRequestFailedException">
@@ -134,7 +134,7 @@ public interface IHidHideControlService
     ///     <see cref="HidHideException.NativeErrorCode" /> and <see cref="HidHideException.NativeErrorMessage" /> for details.
     /// </exception>
     /// <exception cref="HidHideBufferOverflowException">
-    ///     Buffer size exceeded maximum allowed characters. Happens when list
+    ///     Buffer size exceeded the maximum allowed characters. It happens when the list
     ///     grew out of supported bounds.
     /// </exception>
     void AddBlockedInstanceId(string instanceId);
@@ -152,7 +152,7 @@ public interface IHidHideControlService
     ///     using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
-    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     Failed to locate the driver. Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
     /// <exception cref="HidHideRequestFailedException">
@@ -160,7 +160,7 @@ public interface IHidHideControlService
     ///     <see cref="HidHideException.NativeErrorCode" /> and <see cref="HidHideException.NativeErrorMessage" /> for details.
     /// </exception>
     /// <exception cref="HidHideBufferOverflowException">
-    ///     Buffer size exceeded maximum allowed characters. Happens when list
+    ///     Buffer size exceeded the maximum allowed characters. It happens when the list
     ///     grew out of supported bounds.
     /// </exception>
     void RemoveBlockedInstanceId(string instanceId);
@@ -174,11 +174,11 @@ public interface IHidHideControlService
     ///     place.
     /// </remarks>
     /// <exception cref="HidHideDriverAccessFailedException">
-    ///     Failed to open handle to driver. Make sure no other process is
-    ///     using the API at the same time.
+    ///     Failed to open a handle to the driver.
+    ///     Make sure no other process is using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
-    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     Failed to locate the driver. Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
     /// <exception cref="HidHideRequestFailedException">
@@ -186,30 +186,33 @@ public interface IHidHideControlService
     ///     <see cref="HidHideException.NativeErrorCode" /> and <see cref="HidHideException.NativeErrorMessage" /> for details.
     /// </exception>
     /// <exception cref="HidHideBufferOverflowException">
-    ///     Buffer size exceeded maximum allowed characters. Happens when list
+    ///     Buffer size exceeded the maximum allowed characters. It happens when the list
     ///     grew out of supported bounds.
     /// </exception>
     void ClearBlockedInstancesList();
 
     /// <summary>
-    ///     Submit a new application to allow (or deny if inverse flag is set).
+    ///     Submit a new application to allow (or deny if the inverse flag is set).
     /// </summary>
     /// <remarks>Use the common local path notation (e.g. "C:\Windows\System32\rundll32.exe").</remarks>
     /// <param name="path">The absolute application path to allow.</param>
     /// <exception cref="HidHideDriverAccessFailedException">
-    ///     Failed to open handle to driver. Make sure no other process is
-    ///     using the API at the same time.
+    ///     Failed to open a handle to the driver.
+    ///     Make sure no other process is using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
-    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     Failed to locate the driver.
+    ///     Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
     /// <exception cref="HidHideRequestFailedException">
-    ///     Driver communication has failed. See
+    ///     Driver communication has failed.
+    ///     See
     ///     <see cref="HidHideException.NativeErrorCode" /> and <see cref="HidHideException.NativeErrorMessage" /> for details.
     /// </exception>
     /// <exception cref="HidHideBufferOverflowException">
-    ///     Buffer size exceeded maximum allowed characters. Happens when list
+    ///     Buffer size exceeded the maximum allowed characters.
+    ///     It happens when the list
     ///     grew out of supported bounds.
     /// </exception>
     void AddApplicationPath(string path);
@@ -220,11 +223,11 @@ public interface IHidHideControlService
     /// <remarks>Use the common local path notation (e.g. "C:\Windows\System32\rundll32.exe").</remarks>
     /// <param name="path">The absolute application path to revoke.</param>
     /// <exception cref="HidHideDriverAccessFailedException">
-    ///     Failed to open handle to driver. Make sure no other process is
+    ///     Failed to open a handle to the driver. Make sure no other process is
     ///     using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
-    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     Failed to locate the driver. Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
     /// <exception cref="HidHideRequestFailedException">
@@ -232,7 +235,7 @@ public interface IHidHideControlService
     ///     <see cref="HidHideException.NativeErrorCode" /> and <see cref="HidHideException.NativeErrorMessage" /> for details.
     /// </exception>
     /// <exception cref="HidHideBufferOverflowException">
-    ///     Buffer size exceeded maximum allowed characters. Happens when list
+    ///     Buffer size exceeded the maximum allowed characters. It happens when the list
     ///     grew out of supported bounds.
     /// </exception>
     void RemoveApplicationPath(string path);
@@ -246,11 +249,11 @@ public interface IHidHideControlService
     ///     place.
     /// </remarks>
     /// <exception cref="HidHideDriverAccessFailedException">
-    ///     Failed to open handle to driver. Make sure no other process is
+    ///     Failed to open a handle to the driver. Make sure no other process is
     ///     using the API at the same time.
     /// </exception>
     /// <exception cref="HidHideDriverNotFoundException">
-    ///     Failed to locate driver. Make sure HidHide is installed and not in a
+    ///     Failed to locate the driver. Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
     /// <exception cref="HidHideRequestFailedException">
@@ -258,7 +261,7 @@ public interface IHidHideControlService
     ///     <see cref="HidHideException.NativeErrorCode" /> and <see cref="HidHideException.NativeErrorMessage" /> for details.
     /// </exception>
     /// <exception cref="HidHideBufferOverflowException">
-    ///     Buffer size exceeded maximum allowed characters. Happens when list
+    ///     Buffer size exceeded the maximum allowed characters. It happens when the list
     ///     grew out of supported bounds.
     /// </exception>
     void ClearApplicationsList();
