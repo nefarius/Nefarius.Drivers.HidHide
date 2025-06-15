@@ -60,7 +60,7 @@ public abstract class HidHideException : Exception
 }
 
 /// <summary>
-///     Failed to open handle to driver. Make sure no other process is using the API at the same time.
+///     Failed to open a handle to the driver. Make sure no other process is using the API at the same time.
 /// </summary>
 public sealed class HidHideDriverAccessFailedException : HidHideException
 {
@@ -71,7 +71,7 @@ public sealed class HidHideDriverAccessFailedException : HidHideException
 }
 
 /// <summary>
-///     Failed to locate driver. Make sure HidHide is installed and not in a faulty state.
+///     Failed to locate the driver. Make sure HidHide is installed and not in a faulty state.
 /// </summary>
 public sealed class HidHideDriverNotFoundException : HidHideException
 {
@@ -82,7 +82,7 @@ public sealed class HidHideDriverNotFoundException : HidHideException
 }
 
 /// <summary>
-///     Buffer size exceeded maximum allowed characters.
+///     Buffer size exceeded the maximum allowed characters.
 /// </summary>
 public sealed class HidHideBufferOverflowException : HidHideException
 {
