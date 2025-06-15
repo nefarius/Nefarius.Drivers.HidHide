@@ -62,8 +62,11 @@ internal class VolumeHelper
                 // Extract volume name for use with QueryDosDevice
                 string deviceName = volume.Substring(4, volume.Length - 1 - 4);
 
-                // Grab device path
-                returnLength = PInvoke.QueryDosDevice(deviceName, pPathName, ushort.MaxValue);
+                fixed (char* pDeviceName = deviceName)
+                {
+                    // Grab the device path
+                    returnLength = PInvoke.QueryDosDevice(pDeviceName, pPathName, ushort.MaxValue);
+                }
 
                 if (returnLength <= 0)
                 {
