@@ -5,7 +5,7 @@ using Nefarius.Vicius.Abstractions.Models;
 
 namespace App;
 
-public class DemoService : BackgroundService
+internal class DemoService : BackgroundService
 {
     // injects the service used to configure HidHide
     private readonly IHidHideControlService _hh;
