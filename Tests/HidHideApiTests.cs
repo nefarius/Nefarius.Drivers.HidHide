@@ -33,7 +33,8 @@ internal class Tests
         service.ClearApplicationsList();
 
         // make sure this exists or an exception will be thrown
-        const string fileName = @"F:\Downloads\amd-software-adrenalin-edition-22.10.1-minimalsetup-221003_web.exe";
+        //const string fileName = @"F:\Downloads\amd-software-adrenalin-edition-22.10.1-minimalsetup-221003_web.exe";
+        const string fileName = @"E:\Downloads\amd-software-adrenalin-edition-24.6.1-minimalsetup-240626_web.exe";
 
         service.AddApplicationPath(fileName);
 
