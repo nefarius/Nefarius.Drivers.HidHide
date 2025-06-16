@@ -29,7 +29,7 @@ The  to modify.
 Optional options to customize the registered HidHide services.
 
 `builder` [Action&lt;IHttpClientBuilder&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.action-1)<br>
-Optional  to e.g. add resiliency policies or further customize
+Optional  to e.g., add resiliency policies or further customize
  the named HTTP client.
 
 #### Returns
