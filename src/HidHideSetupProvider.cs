@@ -157,7 +157,7 @@ public sealed class HidHideSetupProvider
     /// <summary>
     ///     Downloads the setup asset of the provided <see cref="UpdateRelease" />.
     /// </summary>
-    /// <param name="release">The <see cref="UpdateRelease" /> who's asset7setup should be downloaded.</param>
+    /// <param name="release">The <see cref="UpdateRelease" /> who's asset setup should be downloaded.</param>
     /// <param name="ct">Optional <see cref="CancellationToken" />.</param>
     /// <returns><see cref="HttpResponseMessage" /> on success.</returns>
     /// <exception cref="HttpRequestException">Server communication error occurred.</exception>
