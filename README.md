@@ -50,3 +50,4 @@ Check the [demo app sources](./App) for implementation and usage details.
 
 - [C#/Win32 P/Invoke Source Generator](https://github.com/microsoft/CsWin32)
 - [MinVer](https://github.com/adamralph/minver)
+- [Nefarius.Vicius.Abstractions](https://github.com/nefarius/Nefarius.Vicius.Abstractions)
