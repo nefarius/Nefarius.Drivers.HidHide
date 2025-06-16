@@ -227,6 +227,10 @@ Buffer size exceeded the maximum allowed characters.
  It happens when the list
  grew out of supported bounds.
 
+[FileNotFoundException](https://docs.microsoft.com/en-us/dotnet/api/system.io.filenotfoundexception)<br>
+`throwIfInvalid` was set and the supplied file
+ `path` wasn't found.
+
 **Remarks:**
 
 Use the common local path notation (e.g. "C:\Windows\System32\rundll32.exe").
