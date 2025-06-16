@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 using Nefarius.Drivers.HidHide.Exceptions;
 using Nefarius.Utilities.DeviceManagement.Exceptions;
@@ -215,6 +216,10 @@ public interface IHidHideControlService
     ///     Buffer size exceeded the maximum allowed characters.
     ///     It happens when the list
     ///     grew out of supported bounds.
+    /// </exception>
+    /// <exception cref="FileNotFoundException">
+    ///     <paramref name="throwIfInvalid" /> was set and the supplied file
+    ///     <paramref name="path" /> wasn't found.
     /// </exception>
     void AddApplicationPath(string path, bool throwIfInvalid = true);
 
