@@ -2,7 +2,7 @@ using Nefarius.Drivers.HidHide;
 
 namespace Tests;
 
-internal class Tests
+internal partial class Tests
 {
     [SetUp]
     public void Setup()
