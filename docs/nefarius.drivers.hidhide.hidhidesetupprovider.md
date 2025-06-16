@@ -66,7 +66,7 @@ public Task<HttpResponseMessage> DownloadReleaseAsync(UpdateRelease release, Can
 #### Parameters
 
 `release` UpdateRelease<br>
-The  who's asset7setup should be downloaded.
+The  who's asset setup should be downloaded.
 
 `ct` [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken)<br>
 Optional [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken).
