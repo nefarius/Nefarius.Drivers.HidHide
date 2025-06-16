@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
     ///     the named HTTP client.
     /// </param>
     public static IServiceCollection AddHidHide(this IServiceCollection services,
-        Action<HidHideServiceOptions>? options = default, Action<IHttpClientBuilder>? builder = default)
+        Action<HidHideServiceOptions>? options = null, Action<IHttpClientBuilder>? builder = null)
     {
         HidHideServiceOptions serviceOptions = new();
 

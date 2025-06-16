@@ -27,8 +27,9 @@ public abstract class HidHideServerExceptions : Exception
 /// </summary>
 public sealed class UpdateResponseMissingException : HidHideServerExceptions
 {
-    internal UpdateResponseMissingException(Exception innerException = default) : base(
-        "Update response object missing, couldn't be deserialized or server error. Check InnerException for details.")
+    internal UpdateResponseMissingException(Exception innerException = null) : base(
+        "Update response object missing, couldn't be deserialized or server error. Check InnerException for details.",
+        innerException)
     {
     }
 }
