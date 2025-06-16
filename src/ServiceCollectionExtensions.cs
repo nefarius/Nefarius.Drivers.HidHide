@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection" /> to modify.</param>
     /// <param name="options">Optional options to customize the registered HidHide services.</param>
     /// <param name="builder">
-    ///     Optional <see cref="IHttpClientBuilder" /> to e.g. add resiliency policies or further customize
+    ///     Optional <see cref="IHttpClientBuilder" /> to e.g., add resiliency policies or further customize
     ///     the named HTTP client.
     /// </param>
     public static IServiceCollection AddHidHide(this IServiceCollection services,
