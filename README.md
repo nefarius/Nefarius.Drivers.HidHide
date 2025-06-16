@@ -14,6 +14,7 @@ Managed API for configuring [HidHide](https://github.com/nefarius/HidHide).
 
 ## Usage (classic)
 
+> [!CAUTION]
 > This is the deprecated approach.
 
 Create an instance of `HidHideControlService` whenever you need it.
@@ -23,6 +24,7 @@ driver is only opened when necessary (when the properties are read from or the m
 
 ## Usage (dependency injection)
 
+> [!NOTE]  
 > This is the recommended approach.
 
 If you plan to make use of Microsoft Dependency Injection (in ASP.NET Core, Worker Services and alike) and the online
