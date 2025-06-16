@@ -1,0 +1,30 @@
+name: Publish to Baget
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .Net SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Make Nuget Packages
+        run: dotnet pack -c Release
+
+      - name: Publish To Nuget
+        run: dotnet nuget push bin/*.nupkg -k $NUGET_AUTH_TOKEN -s https://baget.nefarius.at/v3/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.BAGET_API_KEY }}
