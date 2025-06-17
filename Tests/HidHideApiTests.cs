@@ -30,7 +30,13 @@ internal partial class Tests
     [Test]
     public void TestIsAppListInverted()
     {
+        _hhControl.IsAppListInverted = true;
+        
         Assert.That(_hhControl.IsAppListInverted, Is.True);
+        
+        _hhControl.IsAppListInverted = false;
+        
+        Assert.That(_hhControl.IsAppListInverted, Is.False);
     }
 
     [Test]
