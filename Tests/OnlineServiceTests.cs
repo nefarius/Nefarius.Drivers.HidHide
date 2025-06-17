@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-using Nefarius.Drivers.HidHide;
-using Nefarius.Vicius.Abstractions.Models;
+﻿using Nefarius.Vicius.Abstractions.Models;
 
 namespace Tests;
 
@@ -10,14 +7,7 @@ internal partial class Tests
     [Test]
     public async Task TestGetLatestReleaseAsync()
     {
-        ServiceCollection sc = new();
-        sc.AddHidHide();
-
-        ServiceProvider sp = sc.BuildServiceProvider();
-
-        HidHideSetupProvider provider = sp.GetRequiredService<HidHideSetupProvider>();
-
-        UpdateRelease release = await provider.GetLatestReleaseAsync();
+        UpdateRelease release = await _hhProvider.GetLatestReleaseAsync();
 
         Assert.That(release, Is.Not.Null);
     }
@@ -25,14 +15,7 @@ internal partial class Tests
     [Test]
     public async Task TestGetLatestVersionAsync()
     {
-        ServiceCollection sc = new();
-        sc.AddHidHide();
-
-        ServiceProvider sp = sc.BuildServiceProvider();
-
-        HidHideSetupProvider provider = sp.GetRequiredService<HidHideSetupProvider>();
-
-        Version version = await provider.GetLatestVersionAsync();
+        Version version = await _hhProvider.GetLatestVersionAsync();
 
         Assert.That(version, Is.EqualTo(Version.Parse("1.5.230.0")));
     }
@@ -40,19 +23,12 @@ internal partial class Tests
     [Test]
     public async Task TestDownloadLatestReleaseAsync()
     {
-        ServiceCollection sc = new();
-        sc.AddHidHide();
-
-        ServiceProvider sp = sc.BuildServiceProvider();
-
-        HidHideSetupProvider provider = sp.GetRequiredService<HidHideSetupProvider>();
-
-        HttpResponseMessage response = await provider.DownloadLatestReleaseAsync();
+        HttpResponseMessage response = await _hhProvider.DownloadLatestReleaseAsync();
 
         Assert.That(response.IsSuccessStatusCode, Is.True);
 
         byte[] body = await response.Content.ReadAsByteArrayAsync();
-        
+
         Assert.That(body, Is.Not.Empty);
     }
 }
