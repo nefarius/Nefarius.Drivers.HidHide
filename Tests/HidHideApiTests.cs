@@ -24,7 +24,13 @@ internal partial class Tests
     [Test]
     public void TestIsActive()
     {
+        _hhControl.IsActive = true;
+        
         Assert.That(_hhControl.IsActive, Is.True);
+        
+        _hhControl.IsActive = false;
+        
+        Assert.That(_hhControl.IsActive, Is.False);
     }
 
     [Test]
@@ -61,7 +67,8 @@ internal partial class Tests
     [Test]
     public void TestAppListInvalid()
     {
-        const string fileName = @"F:\Downloads\I-do-not-exist.exe";
+        string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            Path.GetRandomFileName());
 
         Assert.That(() => _hhControl.AddApplicationPath(fileName), Throws.TypeOf<FileNotFoundException>());
     }
