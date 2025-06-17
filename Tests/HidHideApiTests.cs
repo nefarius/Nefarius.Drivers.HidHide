@@ -38,12 +38,16 @@ internal partial class Tests
     {
         _hhControl.ClearApplicationsList();
 
+        List<string> list = _hhControl.ApplicationPaths.ToList();
+        
+        Assert.That(list, Is.Empty);
+        
         // make sure this exists or an exception will be thrown
         const string fileName = @"E:\Downloads\amd-software-adrenalin-edition-24.6.1-minimalsetup-240626_web.exe";
 
         _hhControl.AddApplicationPath(fileName);
 
-        List<string> list = _hhControl.ApplicationPaths.ToList();
+        list = _hhControl.ApplicationPaths.ToList();
 
         Assert.That(list, Contains.Item(fileName));
     }
