@@ -28,7 +28,7 @@ driver is only opened when necessary (when the properties are read from or the m
 > This is the recommended approach.
 
 If you plan to make use of Microsoft Dependency Injection (in ASP.NET Core, Worker Services and alike) and the online
-services, your app also need to add these NuGet packages:
+services, your project also needs to add these NuGet packages:
 
 - `Microsoft.Extensions.Http`
 - `NJsonSchema`
