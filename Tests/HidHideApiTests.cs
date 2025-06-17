@@ -8,7 +8,7 @@ internal partial class Tests
 {
     private IHidHideControlService _hhControl;
     private HidHideSetupProvider _hhProvider;
-    
+
     [SetUp]
     public void Setup()
     {
@@ -31,11 +31,11 @@ internal partial class Tests
     public void TestIsAppListInverted()
     {
         _hhControl.IsAppListInverted = true;
-        
+
         Assert.That(_hhControl.IsAppListInverted, Is.True);
-        
+
         _hhControl.IsAppListInverted = false;
-        
+
         Assert.That(_hhControl.IsAppListInverted, Is.False);
     }
 
@@ -45,11 +45,11 @@ internal partial class Tests
         _hhControl.ClearApplicationsList();
 
         List<string> list = _hhControl.ApplicationPaths.ToList();
-        
+
         Assert.That(list, Is.Empty);
-        
+
         // make sure this exists or an exception will be thrown
-        const string fileName = @"E:\Downloads\amd-software-adrenalin-edition-24.6.1-minimalsetup-240626_web.exe";
+        string fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "rundll32.exe");
 
         _hhControl.AddApplicationPath(fileName);
 
@@ -57,7 +57,7 @@ internal partial class Tests
 
         Assert.That(list, Contains.Item(fileName));
     }
-    
+
     [Test]
     public void TestAppListInvalid()
     {
