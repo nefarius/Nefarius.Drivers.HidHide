@@ -26,9 +26,13 @@
 
 - [HidHideException](./nefarius.drivers.hidhide.exceptions.hidhideexception.md)
 
+- [HidHideHandleInvalidException](./nefarius.drivers.hidhide.exceptions.hidhidehandleinvalidexception.md)
+
 - [HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)
 
 - [HidHideServerExceptions](./nefarius.drivers.hidhide.exceptions.hidhideserverexceptions.md)
+
+- [HidHideWin32ErrorException](./nefarius.drivers.hidhide.exceptions.hidhidewin32errorexception.md)
 
 - [MalformedUrlException](./nefarius.drivers.hidhide.exceptions.malformedurlexception.md)
 
