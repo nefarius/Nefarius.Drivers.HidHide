@@ -59,14 +59,10 @@ public abstract class HidHideException : Exception
     }
 
     /// <inheritdoc />
-    public override string Message {
-        get
-        {
-          return string.IsNullOrEmpty(NativeErrorMessage) 
-              ? base.Message 
-              : $"{base.Message}\r\nWin32 error: {NativeErrorMessage} ({NativeErrorCode})";   
-        } 
-    }
+    public override string Message =>
+        string.IsNullOrEmpty(NativeErrorMessage)
+            ? base.Message
+            : $"{base.Message}\r\nWin32 error: {NativeErrorMessage} ({NativeErrorCode})";
 }
 
 /// <summary>
@@ -76,6 +72,29 @@ public sealed class HidHideDriverAccessFailedException : HidHideException
 {
     internal HidHideDriverAccessFailedException() : base(
         "Failed to open handle to driver. Make sure no other process is using the API at the same time.")
+    {
+    }
+}
+
+/// <summary>
+///     Indicates that the driver handle is invalid. Ensure that the driver is installed properly and operational.
+/// </summary>
+public sealed class HidHideHandleInvalidException : HidHideException
+{
+    internal HidHideHandleInvalidException() : base(
+        "Failed to open handle to driver. Make sure the driver is installed properly and operational.")
+    {
+    }
+}
+
+/// <summary>
+///     Represents an exception caused by an unknown Win32 error in the HidHide API.
+///     Provides additional details through the 'NativeErrorCode' and 'NativeErrorMessage' properties.
+/// </summary>
+public sealed class HidHideWin32ErrorException : HidHideException
+{
+    internal HidHideWin32ErrorException() : base(
+        "An unknown Win32 error occurred. Check the 'NativeErrorCode' and 'NativeErrorMessage' property for more details.")
     {
     }
 }
