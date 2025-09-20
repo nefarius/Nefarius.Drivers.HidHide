@@ -30,6 +30,7 @@ internal static class SafeFileHandleExtensions
         {
             WIN32_ERROR.ERROR_ACCESS_DENIED => new HidHideDriverAccessFailedException(),
             WIN32_ERROR.ERROR_NOT_FOUND => new HidHideDriverNotFoundException(),
+            WIN32_ERROR.ERROR_FILE_NOT_FOUND => new HidHideDriverNotFoundException(),
             WIN32_ERROR.ERROR_INVALID_HANDLE => new HidHideHandleInvalidException(),
             _ => new HidHideWin32ErrorException()
         };
