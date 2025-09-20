@@ -17,6 +17,8 @@ internal static class SafeFileHandleExtensions
     /// <returns>The validated SafeFileHandle if it's in a valid state.</returns>
     /// <exception cref="HidHideDriverAccessFailedException">Thrown when access to the handle is denied.</exception>
     /// <exception cref="HidHideDriverNotFoundException">Thrown when the handle does not refer to a valid object.</exception>
+    /// <exception cref="HidHideHandleInvalidException">Thrown when the provided handle is invalid.</exception>
+    /// <exception cref="HidHideWin32ErrorException">Thrown when an unexpected Win32 error occurs.</exception>
     internal static SafeFileHandle HaltAndCatchFireOnError(this SafeFileHandle handle)
     {
         if (!handle.IsInvalid || handle.IsClosed)
