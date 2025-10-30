@@ -28,6 +28,8 @@
 
 - [HidHideHandleInvalidException](./nefarius.drivers.hidhide.exceptions.hidhidehandleinvalidexception.md)
 
+- [HidHideMultipleDeviceNodesFoundException](./nefarius.drivers.hidhide.exceptions.hidhidemultipledevicenodesfoundexception.md)
+
 - [HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)
 
 - [HidHideServerExceptions](./nefarius.drivers.hidhide.exceptions.hidhideserverexceptions.md)

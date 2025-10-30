@@ -12,7 +12,7 @@ public interface IHidHideControlService
 
 ### <a id="properties-applicationpaths"/>**ApplicationPaths**
 
-Returns list of currently allowed (or blocked, see [IHidHideControlService.IsAppListInverted](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#isapplistinverted)) application paths.
+Returns a list of currently allowed (or blocked, see [IHidHideControlService.IsAppListInverted](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#isapplistinverted)) application paths.
 
 ```csharp
 public abstract IReadOnlyList<String> ApplicationPaths { get; }
@@ -42,7 +42,7 @@ Buffer size exceeded the maximum allowed characters. It happens when the list
 
 ### <a id="properties-blockedinstanceids"/>**BlockedInstanceIds**
 
-Returns list of currently blocked instance IDs.
+Returns a list of currently blocked instance IDs.
 
 ```csharp
 public abstract IReadOnlyList<String> BlockedInstanceIds { get; }
@@ -188,6 +188,10 @@ An unexpected enumeration error occurred.
 Failed to locate the driver. Make sure HidHide is installed and not in a
  faulty state.
 
+[HidHideMultipleDeviceNodesFoundException](./nefarius.drivers.hidhide.exceptions.hidhidemultipledevicenodesfoundexception.md)<br>
+More than one software device node was found. This can lead
+ to unexpected behavior. Please uninstall the driver and reinstall it.
+
 ## Methods
 
 ### <a id="methods-addapplicationpath"/>**AddApplicationPath(String, Boolean)**
@@ -237,7 +241,7 @@ Use the common local path notation (e.g. "C:\Windows\System32\rundll32.exe").
 
 ### <a id="methods-addblockedinstanceid"/>**AddBlockedInstanceId(String)**
 
-Submit a new instance to block.
+Submit a new instance for blocking.
 
 ```csharp
 void AddBlockedInstanceId(string instanceId)
