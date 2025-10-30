@@ -111,6 +111,17 @@ public sealed class HidHideDriverNotFoundException : HidHideException
 }
 
 /// <summary>
+///     More than one software device node was found. This can lead to unexpected behavior. Please uninstall the driver and reinstall it.
+/// </summary>
+public sealed class HidHideMultipleDeviceNodesFoundException : HidHideException
+{
+    internal HidHideMultipleDeviceNodesFoundException() : base(
+        "More than one software device node was found. This can lead to unexpected behavior. Please uninstall the driver and reinstall it.")
+    {
+    }
+}
+
+/// <summary>
 ///     Buffer size exceeded the maximum allowed characters.
 /// </summary>
 public sealed class HidHideBufferOverflowException : HidHideException

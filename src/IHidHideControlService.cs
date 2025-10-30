@@ -57,6 +57,10 @@ public interface IHidHideControlService
     ///     Failed to locate the driver. Make sure HidHide is installed and not in a
     ///     faulty state.
     /// </exception>
+    /// <exception cref="HidHideMultipleDeviceNodesFoundException">
+    ///     More than one software device node was found. This can lead
+    ///     to unexpected behavior. Please uninstall the driver and reinstall it.
+    /// </exception>
     Version LocalDriverVersion { get; }
 
     /// <summary>
@@ -73,7 +77,7 @@ public interface IHidHideControlService
     bool IsAppListInverted { get; set; }
 
     /// <summary>
-    ///     Returns list of currently blocked instance IDs.
+    ///     Returns a list of currently blocked instance IDs.
     /// </summary>
     /// <exception cref="HidHideDriverAccessFailedException">
     ///     Failed to open a handle to the driver.
@@ -94,7 +98,7 @@ public interface IHidHideControlService
     IReadOnlyList<string> BlockedInstanceIds { get; }
 
     /// <summary>
-    ///     Returns list of currently allowed (or blocked, see <see cref="IsAppListInverted" />) application paths.
+    ///     Returns a list of currently allowed (or blocked, see <see cref="IsAppListInverted" />) application paths.
     /// </summary>
     /// <exception cref="HidHideDriverAccessFailedException">
     ///     Failed to open a handle to the driver.
@@ -115,7 +119,7 @@ public interface IHidHideControlService
     IReadOnlyList<string> ApplicationPaths { get; }
 
     /// <summary>
-    ///     Submit a new instance to block.
+    ///     Submit a new instance for blocking.
     /// </summary>
     /// <remarks>
     ///     To get the instance ID from e.g. a symbolic link (device path) you can use this companion library:

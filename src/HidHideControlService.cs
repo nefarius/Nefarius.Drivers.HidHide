@@ -242,8 +242,15 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideDriverNotFoundException();
             }
 
-            PnPDevice virtualDevice = PnPDevice.GetDeviceByInstanceId(hhInstances.Single());
-            return virtualDevice.GetCurrentDriver().DriverVersion;
+            try
+            {
+                PnPDevice virtualDevice = PnPDevice.GetDeviceByInstanceId(hhInstances.Single());
+                return virtualDevice.GetCurrentDriver().DriverVersion;
+            }
+            catch (InvalidOperationException)
+            {
+                throw new HidHideMultipleDeviceNodesFoundException();
+            }
         }
     }
 
