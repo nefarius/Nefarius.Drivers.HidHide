@@ -19,7 +19,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.3" PrivateAssets="all" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
-        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.217">
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.272">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="MinVer" Version="7.0.0">
