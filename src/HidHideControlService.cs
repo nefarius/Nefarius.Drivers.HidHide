@@ -102,7 +102,7 @@ public sealed class HidHideControlService : IHidHideControlService
             byte* buffer = stackalloc byte[bufferLength];
 
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlGetActive,
                 null,
                 0,
@@ -133,7 +133,7 @@ public sealed class HidHideControlService : IHidHideControlService
             buffer[0] = value ? (byte)1 : (byte)0;
 
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlSetActive,
                 buffer,
                 (uint)bufferLength,
@@ -265,7 +265,7 @@ public sealed class HidHideControlService : IHidHideControlService
             byte* buffer = stackalloc byte[bufferLength];
 
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlGetWlInverse,
                 null,
                 0,
@@ -292,7 +292,7 @@ public sealed class HidHideControlService : IHidHideControlService
             buffer[0] = value ? (byte)1 : (byte)0;
 
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlSetWlInverse,
                 buffer,
                 (uint)bufferLength,
@@ -360,7 +360,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlSetBlacklist,
                 buffer.ToPointer(),
                 (uint)length,
@@ -409,7 +409,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlSetBlacklist,
                 buffer.ToPointer(),
                 (uint)length,
@@ -450,7 +450,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlSetBlacklist,
                 buffer.ToPointer(),
                 (uint)length,
@@ -508,7 +508,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlSetWhitelist,
                 buffer.ToPointer(),
                 (uint)length,
@@ -561,7 +561,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlSetWhitelist,
                 buffer.ToPointer(),
                 (uint)length,
@@ -604,7 +604,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Submit the new list
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlSetWhitelist,
                 buffer.ToPointer(),
                 (uint)length,
@@ -651,7 +651,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Get required buffer size
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlGetWhitelist,
                 null,
                 0,
@@ -676,7 +676,7 @@ public sealed class HidHideControlService : IHidHideControlService
             // Get actual buffer content
             // Check return value for success
             ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlGetWhitelist,
                 null,
                 0,
@@ -722,7 +722,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Get required buffer size
             BOOL ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlGetBlacklist,
                 null,
                 0,
@@ -746,7 +746,7 @@ public sealed class HidHideControlService : IHidHideControlService
 
             // Get actual buffer content
             ret = PInvoke.DeviceIoControl(
-                handle,
+                new HANDLE(handle.DangerousGetHandle()),
                 IoctlGetBlacklist,
                 null,
                 0,
