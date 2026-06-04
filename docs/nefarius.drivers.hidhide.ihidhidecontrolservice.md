@@ -20,7 +20,7 @@ public abstract IReadOnlyList<String> ApplicationPaths { get; }
 
 #### Property Value
 
-[IReadOnlyList&lt;String&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlylist-1)<br>
+[IReadOnlyList](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)<[String](https://learn.microsoft.com/dotnet/api/system.string)><br>
 
 #### Exceptions
 
@@ -50,7 +50,7 @@ public abstract IReadOnlyList<String> BlockedInstanceIds { get; }
 
 #### Property Value
 
-[IReadOnlyList&lt;String&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlylist-1)<br>
+[IReadOnlyList](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)<[String](https://learn.microsoft.com/dotnet/api/system.string)><br>
 
 #### Exceptions
 
@@ -80,7 +80,7 @@ public abstract bool IsActive { get; set; }
 
 #### Property Value
 
-[Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
 
 #### Exceptions
 
@@ -98,7 +98,7 @@ public abstract bool IsAppListInverted { get; set; }
 
 #### Property Value
 
-[Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
 
 #### Exceptions
 
@@ -121,11 +121,11 @@ public abstract bool IsDriverNodePresent { get; }
 
 #### Property Value
 
-[Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
 
 #### Exceptions
 
-T:Nefarius.Utilities.DeviceManagement.Exceptions.ConfigManagerException<br>
+ConfigManagerException<br>
 An unexpected enumeration error occurred.
 
 ### <a id="properties-isinstalled"/>**IsInstalled**
@@ -138,7 +138,7 @@ public abstract bool IsInstalled { get; }
 
 #### Property Value
 
-[Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
 
 #### Exceptions
 
@@ -156,7 +156,7 @@ public abstract bool IsOperational { get; }
 
 #### Property Value
 
-[Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
 
 #### Exceptions
 
@@ -164,7 +164,7 @@ public abstract bool IsOperational { get; }
 Driver lookup has failed. See [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and
  [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
 
-T:Nefarius.Utilities.DeviceManagement.Exceptions.ConfigManagerException<br>
+ConfigManagerException<br>
 An unexpected enumeration error occurred.
 
 ### <a id="properties-localdriverversion"/>**LocalDriverVersion**
@@ -177,11 +177,11 @@ public abstract Version LocalDriverVersion { get; }
 
 #### Property Value
 
-[Version](https://docs.microsoft.com/en-us/dotnet/api/system.version)<br>
+[Version](https://learn.microsoft.com/dotnet/api/system.version)<br>
 
 #### Exceptions
 
-T:Nefarius.Utilities.DeviceManagement.Exceptions.ConfigManagerException<br>
+ConfigManagerException<br>
 An unexpected enumeration error occurred.
 
 [HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
@@ -204,10 +204,10 @@ void AddApplicationPath(string path, bool throwIfInvalid)
 
 #### Parameters
 
-`path` [String](https://docs.microsoft.com/en-us/dotnet/api/system.string)<br>
+`path` [String](https://learn.microsoft.com/dotnet/api/system.string)<br>
 The absolute application path to allow.
 
-`throwIfInvalid` [Boolean](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)<br>
+`throwIfInvalid` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
 Throws exception if an invalid (nonexistent) file path is supplied.
 
 #### Exceptions
@@ -231,7 +231,7 @@ Buffer size exceeded the maximum allowed characters.
  It happens when the list
  grew out of supported bounds.
 
-[FileNotFoundException](https://docs.microsoft.com/en-us/dotnet/api/system.io.filenotfoundexception)<br>
+[FileNotFoundException](https://learn.microsoft.com/dotnet/api/system.io.filenotfoundexception)<br>
 `throwIfInvalid` was set and the supplied file
  `path` wasn't found.
 
@@ -249,7 +249,7 @@ void AddBlockedInstanceId(string instanceId)
 
 #### Parameters
 
-`instanceId` [String](https://docs.microsoft.com/en-us/dotnet/api/system.string)<br>
+`instanceId` [String](https://learn.microsoft.com/dotnet/api/system.string)<br>
 The Instance ID to block.
 
 #### Exceptions
@@ -349,7 +349,7 @@ void RemoveApplicationPath(string path)
 
 #### Parameters
 
-`path` [String](https://docs.microsoft.com/en-us/dotnet/api/system.string)<br>
+`path` [String](https://learn.microsoft.com/dotnet/api/system.string)<br>
 The absolute application path to revoke.
 
 #### Exceptions
@@ -384,7 +384,7 @@ void RemoveBlockedInstanceId(string instanceId)
 
 #### Parameters
 
-`instanceId` [String](https://docs.microsoft.com/en-us/dotnet/api/system.string)<br>
+`instanceId` [String](https://learn.microsoft.com/dotnet/api/system.string)<br>
 The Instance ID to unblock.
 
 #### Exceptions

@@ -8,7 +8,8 @@ Service collection extension methods.
 public static class ServiceCollectionExtensions
 ```
 
-Inheritance [Object](https://docs.microsoft.com/en-us/dotnet/api/system.object) → [ServiceCollectionExtensions](./nefarius.drivers.hidhide.servicecollectionextensions.md)
+Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → [ServiceCollectionExtensions](./nefarius.drivers.hidhide.servicecollectionextensions.md)<br>
+Attributes [ExtensionAttribute](https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.extensionattribute)
 
 ## Methods
 
@@ -22,16 +23,16 @@ public static IServiceCollection AddHidHide(IServiceCollection services, Action<
 
 #### Parameters
 
-`services` IServiceCollection<br>
-The  to modify.
+`services` [IServiceCollection](https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection)<br>
+The [IServiceCollection](https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection) to modify.
 
-`options` [Action&lt;HidHideServiceOptions&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.action-1)<br>
+`options` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)<[HidHideServiceOptions](./nefarius.drivers.hidhide.hidhideserviceoptions.md)><br>
 Optional options to customize the registered HidHide services.
 
-`builder` [Action&lt;IHttpClientBuilder&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.action-1)<br>
-Optional  to e.g., add resiliency policies or further customize
+`builder` [Action](https://learn.microsoft.com/dotnet/api/system.action-1)<[IHttpClientBuilder](https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.ihttpclientbuilder)><br>
+Optional [IHttpClientBuilder](https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.ihttpclientbuilder) to e.g., add resiliency policies or further customize
  the named HTTP client.
 
 #### Returns
 
-IServiceCollection
+[IServiceCollection](https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection)

@@ -8,7 +8,7 @@ Optional options for HidHide service registration.
 public sealed class HidHideServiceOptions
 ```
 
-Inheritance [Object](https://docs.microsoft.com/en-us/dotnet/api/system.object) → [HidHideServiceOptions](./nefarius.drivers.hidhide.hidhideserviceoptions.md)
+Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → [HidHideServiceOptions](./nefarius.drivers.hidhide.hidhideserviceoptions.md)
 
 ## Properties
 
@@ -22,4 +22,4 @@ public Architecture OSArchitecture { get; set; }
 
 #### Property Value
 
-[Architecture](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.architecture)<br>
+[Architecture](https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.architecture)<br>
