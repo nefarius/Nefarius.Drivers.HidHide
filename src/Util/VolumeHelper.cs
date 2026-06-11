@@ -19,102 +19,57 @@ namespace Nefarius.Drivers.HidHide.Util;
 /// </summary>
 internal class VolumeHelper
 {
-    private static readonly Regex ExtractDevicePathPrefixRegex = new(@"^(\\Device\\HarddiskVolume\d*)\\.*");
+    private static readonly Regex ExtractDevicePathPrefixRegex = new(
+        @"^(\\Device\\HarddiskVolume\d*)\\.*",
+        RegexOptions.IgnoreCase);
+
     private readonly ILogger<VolumeHelper>? _logger;
+    private readonly IVolumeMappingProvider _volumeMappingProvider;
 
     internal VolumeHelper(ILogger<VolumeHelper>? logger)
+        : this(logger, new WindowsVolumeMappingProvider())
+    {
+    }
+
+    internal VolumeHelper(ILogger<VolumeHelper>? logger, IVolumeMappingProvider volumeMappingProvider)
     {
         _logger = logger;
+        _volumeMappingProvider = volumeMappingProvider;
     }
 
     /// <summary>
-    ///     Curates and returns a collection of volume to path mappings.
+    ///     Splits a Win32 MULTI_SZ string into individual entries.
     /// </summary>
-    /// <returns>A collection of <see cref="VolumeMeta" />.</returns>
-    private static unsafe IEnumerable<VolumeMeta> GetVolumeMappings()
+    /// <param name="value">The MULTI_SZ string.</param>
+    /// <returns>The non-empty values.</returns>
+    internal static IReadOnlyList<string> ParseMultiString(string value)
     {
-        char[] volumeName = new char[ushort.MaxValue];
-        char[] pathName = new char[ushort.MaxValue];
-        char[] mountPoint = new char[ushort.MaxValue];
+        return value
+            .Split('\0')
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .ToArray();
+    }
 
-        fixed (char* pVolumeName = volumeName)
-        fixed (char* pPathName = pathName)
-        fixed (char* pMountPoint = mountPoint)
+    private static string? NormalizePath(string path)
+    {
+        try
         {
-            HANDLE volumeHandle = PInvoke.FindFirstVolume(pVolumeName, ushort.MaxValue);
-
-            List<VolumeMeta> list = new();
-
-            do
-            {
-                string volume = new string(volumeName).TrimEnd('\0');
-
-                if (!PInvoke.GetVolumePathNamesForVolumeName(
-                        volume,
-                        pMountPoint,
-                        ushort.MaxValue,
-                        out uint returnLength
-                    ))
-                {
-                    continue;
-                }
-
-                // Extract volume name for use with QueryDosDevice
-                string deviceName = volume.Substring(4, volume.Length - 1 - 4);
-
-                fixed (char* pDeviceName = deviceName)
-                {
-                    // Grab the device path
-                    returnLength = PInvoke.QueryDosDevice(pDeviceName, pPathName, ushort.MaxValue);
-                }
-
-                if (returnLength <= 0)
-                {
-                    continue;
-                }
-
-                VolumeMeta entry = new()
-                {
-                    DriveLetter = new string(mountPoint).TrimEnd('\0'),
-                    VolumeName = volume,
-                    DevicePath = new string(pathName).TrimEnd('\0')
-                };
-
-                list.Add(entry);
-            } while (PInvoke.FindNextVolume(volumeHandle, pVolumeName, ushort.MaxValue));
-
-            return list.ToArray();
+            return Path
+                .GetFullPath(path)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .ToUpperInvariant();
         }
-    }
-
-    /// <summary>
-    ///     Checks if a path is a junction point.
-    /// </summary>
-    /// <param name="di">A <see cref="FileSystemInfo" /> instance.</param>
-    /// <returns>True if it's a junction, false otherwise.</returns>
-    private static bool IsPathReparsePoint(FileSystemInfo di)
-    {
-        return di.Attributes.HasFlag(FileAttributes.ReparsePoint);
-    }
-
-    /// <summary>
-    ///     Helper to make paths comparable.
-    /// </summary>
-    /// <param name="path">The source path.</param>
-    /// <returns>The normalized path.</returns>
-    private static string NormalizePath(string path)
-    {
-        return Path
-            .GetFullPath(new Uri(path).LocalPath)
-            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-            .ToUpperInvariant();
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            return null;
+        }
     }
 
     /// <summary>
     ///     Translates a "DOS device" path to user-land path.
     /// </summary>
     /// <param name="devicePath">The DOS device path to convert.</param>
-    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns empty string.</param>
+    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns null.</param>
     /// <returns>The user-land path.</returns>
     public string? DosDevicePathToPath(string devicePath, bool throwOnError = true)
     {
@@ -142,8 +97,9 @@ internal class VolumeHelper
         string prefix = prefixMatch.Groups[1].Value;
         _logger?.LogDebug("Extracted prefix: {Prefix}", prefix);
 
-        VolumeMeta? mapping = GetVolumeMappings()
-            .SingleOrDefault(m => prefix.Equals(m.DevicePath));
+        VolumeMapping? mapping = _volumeMappingProvider
+            .GetVolumeMappings()
+            .FirstOrDefault(m => prefix.Equals(m.DevicePath, StringComparison.OrdinalIgnoreCase));
 
         if (mapping is null)
         {
@@ -156,12 +112,12 @@ internal class VolumeHelper
         }
 
         string relativePath = devicePath
-            .Replace(mapping.DevicePath, string.Empty)
+            .Substring(mapping.DevicePath.Length)
             .TrimStart(Path.DirectorySeparatorChar);
 
         _logger?.LogDebug("Built relative path: {Path}", relativePath);
 
-        string fullPath = Path.Combine(mapping.DriveLetter, relativePath);
+        string fullPath = Path.Combine(mapping.MountPoint, relativePath);
 
         _logger?.LogDebug("-- Returning path {Path} for device path {DevicePath}", fullPath, devicePath);
 
@@ -172,7 +128,7 @@ internal class VolumeHelper
     ///     Translates a user-land file path to "DOS device" path.
     /// </summary>
     /// <param name="path">The file path in normal namespace format.</param>
-    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns empty string.</param>
+    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns null.</param>
     /// <returns>The device namespace path (DOS device).</returns>
     public string? PathToDosDevicePath(string path, bool throwOnError = true)
     {
@@ -190,65 +146,9 @@ internal class VolumeHelper
             return null;
         }
 
-        string filePart = Path.GetFileName(path);
-        _logger?.LogDebug("File part: {File}", filePart);
-        string? pathPart = Path.GetDirectoryName(path);
-        _logger?.LogDebug("Directory part: {Path}", pathPart);
-
-        if (string.IsNullOrEmpty(pathPart))
-        {
-            _logger?.LogWarning("Directory part of path was empty");
-
-            if (throwOnError)
-            {
-                throw new IOException($"Couldn't resolve directory of path {path}");
-            }
-
-            return null;
-        }
-
-        string pathNoRoot = string.Empty;
-        string? devicePath = string.Empty;
-
-        // Walk up the directory tree to get the "deepest" potential junction
-        for (DirectoryInfo? current = new(pathPart);
-             current is { Exists: true };
-             current = Directory.GetParent(current.FullName))
-        {
-            if (!IsPathReparsePoint(current))
-            {
-                _logger?.LogDebug("Path {Path} is not a reparse point", current);
-                continue;
-            }
-
-            devicePath = GetVolumeMappings()
-                .SingleOrDefault(m =>
-                    !string.IsNullOrEmpty(m.DriveLetter) &&
-                    NormalizePath(m.DriveLetter) == NormalizePath(current.FullName))
-                ?.DevicePath;
-            _logger?.LogDebug("Mapped current path node {Path} to device path {DevicePath}", current, devicePath);
-
-            pathNoRoot = pathPart.Substring(current.FullName.Length);
-            _logger?.LogDebug("Set root-less path to {Path}", pathNoRoot);
-
-            break;
-        }
-
-        // No junctions found, translate original path
-        if (string.IsNullOrEmpty(devicePath))
-        {
-            _logger?.LogDebug("No junctions found for path {Path}, resolving directly", path);
-
-            string driveLetter = Path.GetPathRoot(pathPart)!;
-            devicePath = GetVolumeMappings()
-                .SingleOrDefault(m =>
-                    m.DriveLetter.Equals(driveLetter, StringComparison.InvariantCultureIgnoreCase))?.DevicePath;
-            _logger?.LogDebug("Mapped path {Path} to device path {DevicePath}", path, devicePath);
-            pathNoRoot = pathPart.Substring(Path.GetPathRoot(pathPart)!.Length);
-            _logger?.LogDebug("Set root-less path to {Path}", pathNoRoot);
-        }
-
-        if (string.IsNullOrEmpty(devicePath))
+        if (!TryFindBestMapping(path, out VolumeMapping? mapping, out string? relativePath) ||
+            mapping is null ||
+            relativePath is null)
         {
             _logger?.LogWarning("Failed to resolve path {Path}", path);
 
@@ -261,22 +161,194 @@ internal class VolumeHelper
         }
 
         StringBuilder fullDevicePath = new();
-
-        // Build new DOS Device path
-        fullDevicePath.AppendFormat("{0}{1}", devicePath, Path.DirectorySeparatorChar);
-        fullDevicePath.Append(Path.Combine(pathNoRoot, filePart).TrimStart(Path.DirectorySeparatorChar));
+        fullDevicePath.AppendFormat("{0}{1}", mapping.DevicePath, Path.DirectorySeparatorChar);
+        fullDevicePath.Append(relativePath.TrimStart(Path.DirectorySeparatorChar));
 
         _logger?.LogDebug("-- Returning device path {DevicePath} for path {Path}", fullDevicePath, path);
 
         return fullDevicePath.ToString();
     }
 
-    private class VolumeMeta
+    private bool TryFindBestMapping(string path, out VolumeMapping? mapping, out string? relativePath)
     {
-        public string DriveLetter { get; set; } = null!;
+        string? normalizedPath = NormalizePath(path);
+        VolumeMapping? bestMapping = null;
+        string? bestNormalizedMountPoint = null;
 
-        public string VolumeName { get; set; } = null!;
+        if (normalizedPath is null || normalizedPath.Length == 0)
+        {
+            mapping = null;
+            relativePath = null;
+            return false;
+        }
 
-        public string DevicePath { get; set; } = null!;
+        foreach (VolumeMapping current in _volumeMappingProvider.GetVolumeMappings())
+        {
+            if (string.IsNullOrWhiteSpace(current.MountPoint) || string.IsNullOrWhiteSpace(current.DevicePath))
+            {
+                continue;
+            }
+
+            string? normalizedMountPoint = NormalizePath(current.MountPoint);
+
+            if (normalizedMountPoint is null || normalizedMountPoint.Length == 0)
+            {
+                _logger?.LogDebug("Skipping invalid mount point {MountPoint}", current.MountPoint);
+                continue;
+            }
+
+            string currentNormalizedMountPoint = normalizedMountPoint;
+            bool isMatch =
+                normalizedPath.Equals(currentNormalizedMountPoint, StringComparison.OrdinalIgnoreCase) ||
+                normalizedPath.StartsWith(
+                    currentNormalizedMountPoint + Path.DirectorySeparatorChar,
+                    StringComparison.OrdinalIgnoreCase);
+
+            if (!isMatch)
+            {
+                continue;
+            }
+
+            if (bestNormalizedMountPoint is null || currentNormalizedMountPoint.Length > bestNormalizedMountPoint.Length)
+            {
+                bestMapping = current;
+                bestNormalizedMountPoint = currentNormalizedMountPoint;
+            }
+        }
+
+        if (bestMapping is null)
+        {
+            mapping = null;
+            relativePath = null;
+            return false;
+        }
+
+        mapping = bestMapping;
+        relativePath = GetPathRelativeToMountPoint(bestMapping.MountPoint, path);
+        return true;
+    }
+
+    private static string GetPathRelativeToMountPoint(string mountPoint, string path)
+    {
+        string normalizedMountPoint = mountPoint.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        int startIndex = path.StartsWith(mountPoint, StringComparison.OrdinalIgnoreCase)
+            ? mountPoint.Length
+            : normalizedMountPoint.Length;
+
+        if (startIndex >= path.Length)
+        {
+            return string.Empty;
+        }
+
+        return path.Substring(startIndex).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+    }
+}
+
+internal interface IVolumeMappingProvider
+{
+    IReadOnlyList<VolumeMapping> GetVolumeMappings();
+}
+
+internal sealed class VolumeMapping
+{
+    public VolumeMapping(string mountPoint, string volumeName, string devicePath)
+    {
+        MountPoint = mountPoint;
+        VolumeName = volumeName;
+        DevicePath = devicePath;
+    }
+
+    public string MountPoint { get; }
+
+    public string VolumeName { get; }
+
+    public string DevicePath { get; }
+}
+
+internal sealed class WindowsVolumeMappingProvider : IVolumeMappingProvider
+{
+    private static readonly HANDLE InvalidHandleValue = new(new IntPtr(-1));
+
+    public unsafe IReadOnlyList<VolumeMapping> GetVolumeMappings()
+    {
+        char[] volumeName = new char[ushort.MaxValue];
+        char[] pathName = new char[ushort.MaxValue];
+        char[] mountPoint = new char[ushort.MaxValue];
+
+        fixed (char* pVolumeName = volumeName)
+        fixed (char* pPathName = pathName)
+        fixed (char* pMountPoint = mountPoint)
+        {
+            HANDLE volumeHandle = PInvoke.FindFirstVolume(pVolumeName, ushort.MaxValue);
+            List<VolumeMapping> list = new();
+
+            if (volumeHandle == InvalidHandleValue)
+            {
+                return list;
+            }
+
+            try
+            {
+                do
+                {
+                    string volume = GetNullTerminatedString(volumeName);
+                    Array.Clear(mountPoint, 0, mountPoint.Length);
+                    Array.Clear(pathName, 0, pathName.Length);
+
+                    if (!PInvoke.GetVolumePathNamesForVolumeName(
+                            volume,
+                            pMountPoint,
+                            ushort.MaxValue,
+                            out uint mountPointLength
+                        ))
+                    {
+                        continue;
+                    }
+
+                    string multiString = new string(mountPoint, 0, (int)mountPointLength);
+                    IReadOnlyList<string> mountPoints = VolumeHelper.ParseMultiString(multiString);
+
+                    if (mountPoints.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    string deviceName = volume.Substring(4, volume.Length - 1 - 4);
+                    uint devicePathLength;
+
+                    fixed (char* pDeviceName = deviceName)
+                    {
+                        devicePathLength = PInvoke.QueryDosDevice(pDeviceName, pPathName, ushort.MaxValue);
+                    }
+
+                    if (devicePathLength <= 0)
+                    {
+                        continue;
+                    }
+
+                    string devicePath = new string(pathName, 0, (int)devicePathLength).TrimEnd('\0');
+
+                    foreach (string currentMountPoint in mountPoints)
+                    {
+                        list.Add(new VolumeMapping(currentMountPoint, volume, devicePath));
+                    }
+                } while (PInvoke.FindNextVolume(volumeHandle, pVolumeName, ushort.MaxValue));
+            }
+            finally
+            {
+                PInvoke.FindVolumeClose(volumeHandle);
+            }
+
+            return list;
+        }
+    }
+
+    private static string GetNullTerminatedString(char[] value)
+    {
+        int length = Array.IndexOf(value, '\0');
+
+        return length < 0
+            ? new string(value)
+            : new string(value, 0, length);
     }
 }
