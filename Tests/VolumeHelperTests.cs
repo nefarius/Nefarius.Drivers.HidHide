@@ -102,16 +102,19 @@ internal sealed class VolumeHelperTests
     }
 
     [Test]
-    public void DosDevicePathToPath_UsesFirstMappingOnEqualDevicePaths()
+    public void DosDevicePathToPath_PrefersLongestMountPointOnEqualDevicePaths()
     {
+        // When two mount points share the same device path, the one with the longer (more specific)
+        // mount point path should be chosen to keep round-trips deterministic.
         string root = Path.GetPathRoot(TestContext.CurrentContext.WorkDirectory)!;
+        string mountPoint = root.TrimEnd(Path.DirectorySeparatorChar) + @"\Mount\";
         VolumeHelper helper = CreateHelper(
             new VolumeMapping(root, @"\\?\Volume{root}\", @"\Device\HarddiskVolume1"),
-            new VolumeMapping(root.TrimEnd(Path.DirectorySeparatorChar) + @"\Mount\", @"\\?\Volume{mount}\", @"\Device\HarddiskVolume1"));
+            new VolumeMapping(mountPoint, @"\\?\Volume{mount}\", @"\Device\HarddiskVolume1"));
 
         string? result = helper.DosDevicePathToPath(@"\Device\HarddiskVolume1\Apps\DSX.exe");
 
-        Assert.That(result, Is.EqualTo(Path.Combine(root, "Apps", "DSX.exe")));
+        Assert.That(result, Is.EqualTo(Path.Combine(mountPoint, "Apps", "DSX.exe")));
     }
 
     [Test]
@@ -265,6 +268,54 @@ internal sealed class VolumeHelperTests
         });
     }
 
+    [Test]
+    public void VolumeHelper_CallsGetVolumeMappingsOnce_PerInstance()
+    {
+        using TempFile tempFile = TempFile.Create("Application.exe");
+        string root = Path.GetPathRoot(tempFile.Path)!;
+
+        CountingProvider provider = new(
+            new VolumeMapping(root, @"\\?\Volume{root}\", @"\Device\HarddiskVolume1"));
+
+        VolumeHelper helper = new(null, provider);
+
+        string? devicePath = helper.PathToDosDevicePath(tempFile.Path, throwOnError: false);
+        _ = helper.PathToDosDevicePath(tempFile.Path, throwOnError: false);
+        _ = helper.DosDevicePathToPath(devicePath!, throwOnError: false);
+
+        Assert.That(provider.CallCount, Is.EqualTo(1),
+            "GetVolumeMappings should be called exactly once per VolumeHelper instance regardless of how many translation calls are made.");
+    }
+
+    [Test]
+    public void VolumeHelper_PropagatesWin32Exception_EvenWhenThrowOnErrorIsFalse()
+    {
+        VolumeHelper helper = new(null, new ThrowingProvider());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => helper.PathToDosDevicePath(@"C:\nonexistent\App.exe", throwOnError: false),
+                Throws.InstanceOf<System.ComponentModel.Win32Exception>());
+            Assert.That(() => helper.DosDevicePathToPath(@"\Device\HarddiskVolume1\App.exe", throwOnError: false),
+                Throws.InstanceOf<System.ComponentModel.Win32Exception>());
+        });
+    }
+
+    [Test]
+    public void DosDevicePathToPath_PrefersLongestMountPoint_EvenWhenRegisteredInReversedOrder()
+    {
+        // Verify the tie-break also works when the shorter mount point appears second in the list.
+        string root = Path.GetPathRoot(TestContext.CurrentContext.WorkDirectory)!;
+        string mountPoint = root.TrimEnd(Path.DirectorySeparatorChar) + @"\Mount\";
+        VolumeHelper helper = CreateHelper(
+            new VolumeMapping(mountPoint, @"\\?\Volume{mount}\", @"\Device\HarddiskVolume1"),
+            new VolumeMapping(root, @"\\?\Volume{root}\", @"\Device\HarddiskVolume1"));
+
+        string? result = helper.DosDevicePathToPath(@"\Device\HarddiskVolume1\Apps\DSX.exe");
+
+        Assert.That(result, Is.EqualTo(Path.Combine(mountPoint, "Apps", "DSX.exe")));
+    }
+
     private static VolumeHelper CreateHelper(params VolumeMapping[] mappings)
     {
         return new VolumeHelper(null, new TestVolumeMappingProvider(mappings));
@@ -282,6 +333,32 @@ internal sealed class VolumeHelperTests
         public IReadOnlyList<VolumeMapping> GetVolumeMappings()
         {
             return _mappings;
+        }
+    }
+
+    private sealed class CountingProvider : IVolumeMappingProvider
+    {
+        private readonly IReadOnlyList<VolumeMapping> _mappings;
+
+        public CountingProvider(params VolumeMapping[] mappings)
+        {
+            _mappings = mappings;
+        }
+
+        public int CallCount { get; private set; }
+
+        public IReadOnlyList<VolumeMapping> GetVolumeMappings()
+        {
+            CallCount++;
+            return _mappings;
+        }
+    }
+
+    private sealed class ThrowingProvider : IVolumeMappingProvider
+    {
+        public IReadOnlyList<VolumeMapping> GetVolumeMappings()
+        {
+            throw new System.ComponentModel.Win32Exception(2);
         }
     }
 

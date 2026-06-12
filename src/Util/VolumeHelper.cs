@@ -23,6 +23,7 @@ internal class VolumeHelper
 {
     private readonly ILogger<VolumeHelper>? _logger;
     private readonly IVolumeMappingProvider _volumeMappingProvider;
+    private IReadOnlyList<VolumeMapping>? _mappings;
 
     internal VolumeHelper(ILogger<VolumeHelper>? logger)
         : this(logger, new WindowsVolumeMappingProvider())
@@ -34,6 +35,9 @@ internal class VolumeHelper
         _logger = logger;
         _volumeMappingProvider = volumeMappingProvider;
     }
+
+    private IReadOnlyList<VolumeMapping> GetMappings()
+        => _mappings ??= _volumeMappingProvider.GetVolumeMappings();
 
     /// <summary>
     ///     Splits Win32 MULTI_SZ buffer content into individual entries.
@@ -75,7 +79,12 @@ internal class VolumeHelper
     ///     Translates a "DOS device" path to user-land path.
     /// </summary>
     /// <param name="devicePath">The DOS device path to convert.</param>
-    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns null.</param>
+    /// <param name="throwOnError">
+    ///     When true, throws <see cref="ArgumentException" /> if no matching mount point is found.
+    ///     When false, returns null instead. Note: <paramref name="throwOnError" /> only governs path
+    ///     translation failures. A <see cref="System.ComponentModel.Win32Exception" /> raised by the
+    ///     underlying volume enumeration always propagates regardless of this flag.
+    /// </param>
     /// <returns>The user-land path.</returns>
     public string? DosDevicePathToPath(string devicePath, bool throwOnError = true)
     {
@@ -84,7 +93,7 @@ internal class VolumeHelper
         VolumeMapping? bestMapping = null;
         string? bestDevicePath = null;
 
-        foreach (VolumeMapping current in _volumeMappingProvider.GetVolumeMappings())
+        foreach (VolumeMapping current in GetMappings())
         {
             if (string.IsNullOrWhiteSpace(current.MountPoint) || string.IsNullOrWhiteSpace(current.DevicePath))
             {
@@ -109,7 +118,14 @@ internal class VolumeHelper
                 continue;
             }
 
-            if (bestDevicePath is null || currentDevicePath.Length > bestDevicePath.Length)
+            // Prefer the longer device path; on equal length prefer the longer mount point so that
+            // display is deterministic when one volume is mounted at multiple locations.
+            bool isBetter = bestDevicePath is null ||
+                            currentDevicePath.Length > bestDevicePath.Length ||
+                            (currentDevicePath.Length == bestDevicePath.Length &&
+                             current.MountPoint.Length > bestMapping!.MountPoint.Length);
+
+            if (isBetter)
             {
                 bestMapping = current;
                 bestDevicePath = currentDevicePath;
@@ -150,7 +166,12 @@ internal class VolumeHelper
     ///     Translates a user-land file path to "DOS device" path.
     /// </summary>
     /// <param name="path">The file path in normal namespace format.</param>
-    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns null.</param>
+    /// <param name="throwOnError">
+    ///     When true, throws on parse/translation failures (file not found, no matching mount point).
+    ///     When false, returns null instead. Note: <paramref name="throwOnError" /> only governs path
+    ///     translation failures. A <see cref="System.ComponentModel.Win32Exception" /> raised by the
+    ///     underlying volume enumeration always propagates regardless of this flag.
+    /// </param>
     /// <returns>The device namespace path (DOS device).</returns>
     public string? PathToDosDevicePath(string path, bool throwOnError = true)
     {
@@ -189,7 +210,7 @@ internal class VolumeHelper
         VolumeMapping? bestMapping = null;
         string? bestMountPoint = null;
 
-        foreach (VolumeMapping current in _volumeMappingProvider.GetVolumeMappings())
+        foreach (VolumeMapping current in GetMappings())
         {
             if (string.IsNullOrWhiteSpace(current.MountPoint) || string.IsNullOrWhiteSpace(current.DevicePath))
             {

@@ -492,13 +492,17 @@ public sealed class HidHideControlService : IHidHideControlService
         {
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
-            buffer = GetApplications(handle)
-                .Concat([path]) // Add our own instance paths to the existing list
-                .Distinct() // Remove duplicates, if any
-                .Select(p =>
-                    new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>())
-                        .PathToDosDevicePath(p, false)) // re-convert to dos paths
-                .Where(r => !string.IsNullOrEmpty(r)) // strip invalid entries
+            // Win32Exception from volume enumeration intentionally propagates (aborts before any write).
+            VolumeHelper vh = new(_loggerFactory?.CreateLogger<VolumeHelper>());
+
+            // Operate in device-path space: read the raw list, append the new device path, dedup,
+            // and write back unchanged — no lossy reverse round-trip for existing entries.
+            string? targetDevicePath = vh.PathToDosDevicePath(path, false);
+
+            buffer = GetRawApplications(handle)
+                .Concat(targetDevicePath is null ? [] : [targetDevicePath])
+                .Where(r => !string.IsNullOrEmpty(r))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
                 .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
@@ -545,13 +549,26 @@ public sealed class HidHideControlService : IHidHideControlService
         {
             using SafeFileHandle handle = OpenControlDeviceHandle().HaltAndCatchFireOnError();
 
-            buffer = GetApplications(handle)
-                .Where(i => !i.Equals(path, StringComparison.OrdinalIgnoreCase))
-                .Distinct() // Remove duplicates, if any
-                .Select(p =>
-                    new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>())
-                        .PathToDosDevicePath(p, false)) // re-convert to dos paths
-                .Where(r => !string.IsNullOrEmpty(r)) // strip invalid entries
+            // Win32Exception from volume enumeration intentionally propagates (aborts before any write).
+            VolumeHelper vh = new(_loggerFactory?.CreateLogger<VolumeHelper>());
+
+            // Convert the target path to its device path so the comparison happens in device-path space.
+            // This avoids the lossy reverse round-trip (device->user->device) that breaks removal when
+            // one volume is mounted at multiple locations.
+            string? targetDevicePath = vh.PathToDosDevicePath(path, false);
+
+            IReadOnlyList<string> rawApps = GetRawApplications(handle);
+
+            IEnumerable<string> remaining = targetDevicePath is not null
+                // Happy path: filter raw device paths directly — no reverse conversion needed.
+                ? rawApps.Where(d => !d.Equals(targetDevicePath, StringComparison.OrdinalIgnoreCase))
+                // Fallback: file no longer exists so PathToDosDevicePath returned null; fall back to
+                // comparing via the reverse translation so we still remove a stale entry if possible.
+                : rawApps.Where(d => !string.Equals(
+                    vh.DosDevicePathToPath(d, false), path, StringComparison.OrdinalIgnoreCase));
+
+            buffer = remaining
+                .Distinct()
                 .StringArrayToMultiSzPointer(out int length); // Convert to usable buffer
 
             if (length >= short.MaxValue)
@@ -641,7 +658,7 @@ public sealed class HidHideControlService : IHidHideControlService
         );
     }
 
-    private unsafe IReadOnlyList<string> GetApplications(SafeHandle handle)
+    private unsafe IReadOnlyList<string> GetRawApplications(SafeHandle handle)
     {
         IntPtr buffer = IntPtr.Zero;
 
@@ -674,7 +691,6 @@ public sealed class HidHideControlService : IHidHideControlService
             buffer = Marshal.AllocHGlobal((int)required);
 
             // Get actual buffer content
-            // Check return value for success
             ret = PInvoke.DeviceIoControl(
                 new HANDLE(handle.DangerousGetHandle()),
                 IoctlGetWhitelist,
@@ -691,17 +707,7 @@ public sealed class HidHideControlService : IHidHideControlService
                 throw new HidHideRequestFailedException();
             }
 
-            // Store existing blocklist in a more manageable "C#" fashion
-            List<string?> list = buffer
-                .MultiSzPointerToStringArray((int)required)
-                .Select(p =>
-                    new VolumeHelper(_loggerFactory?.CreateLogger<VolumeHelper>()).DosDevicePathToPath(p, false))
-                .Where(r => !string.IsNullOrEmpty(r))
-                .ToList();
-
-            _logger?.LogDebug("Got applications: {@AppList}", list);
-
-            return list!;
+            return buffer.MultiSzPointerToStringArray((int)required).ToList();
         }
         finally
         {
@@ -710,6 +716,21 @@ public sealed class HidHideControlService : IHidHideControlService
                 Marshal.FreeHGlobal(buffer);
             }
         }
+    }
+
+    private IReadOnlyList<string> GetApplications(SafeHandle handle)
+    {
+        // Win32Exception from volume enumeration intentionally propagates.
+        VolumeHelper vh = new(_loggerFactory?.CreateLogger<VolumeHelper>());
+
+        List<string?> list = GetRawApplications(handle)
+            .Select(p => vh.DosDevicePathToPath(p, false))
+            .Where(r => !string.IsNullOrEmpty(r))
+            .ToList();
+
+        _logger?.LogDebug("Got applications: {@AppList}", list);
+
+        return list!;
     }
 
     private unsafe IReadOnlyList<string> GetBlockedInstances(SafeHandle handle)
