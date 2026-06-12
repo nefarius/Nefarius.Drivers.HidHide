@@ -79,12 +79,7 @@ internal class VolumeHelper
     ///     Translates a "DOS device" path to user-land path.
     /// </summary>
     /// <param name="devicePath">The DOS device path to convert.</param>
-    /// <param name="throwOnError">
-    ///     When true, throws <see cref="ArgumentException" /> if no matching mount point is found.
-    ///     When false, returns null instead. Note: <paramref name="throwOnError" /> only governs path
-    ///     translation failures. A <see cref="System.ComponentModel.Win32Exception" /> raised by the
-    ///     underlying volume enumeration always propagates regardless of this flag.
-    /// </param>
+    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns null.</param>
     /// <returns>The user-land path.</returns>
     public string? DosDevicePathToPath(string devicePath, bool throwOnError = true)
     {
@@ -166,12 +161,7 @@ internal class VolumeHelper
     ///     Translates a user-land file path to "DOS device" path.
     /// </summary>
     /// <param name="path">The file path in normal namespace format.</param>
-    /// <param name="throwOnError">
-    ///     When true, throws on parse/translation failures (file not found, no matching mount point).
-    ///     When false, returns null instead. Note: <paramref name="throwOnError" /> only governs path
-    ///     translation failures. A <see cref="System.ComponentModel.Win32Exception" /> raised by the
-    ///     underlying volume enumeration always propagates regardless of this flag.
-    /// </param>
+    /// <param name="throwOnError">Throw exception on any sort of parsing error if true, false returns null.</param>
     /// <returns>The device namespace path (DOS device).</returns>
     public string? PathToDosDevicePath(string path, bool throwOnError = true)
     {

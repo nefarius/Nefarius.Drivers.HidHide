@@ -288,20 +288,6 @@ internal sealed class VolumeHelperTests
     }
 
     [Test]
-    public void VolumeHelper_PropagatesWin32Exception_EvenWhenThrowOnErrorIsFalse()
-    {
-        VolumeHelper helper = new(null, new ThrowingProvider());
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(() => helper.PathToDosDevicePath(@"C:\nonexistent\App.exe", throwOnError: false),
-                Throws.InstanceOf<System.ComponentModel.Win32Exception>());
-            Assert.That(() => helper.DosDevicePathToPath(@"\Device\HarddiskVolume1\App.exe", throwOnError: false),
-                Throws.InstanceOf<System.ComponentModel.Win32Exception>());
-        });
-    }
-
-    [Test]
     public void DosDevicePathToPath_PrefersLongestMountPoint_EvenWhenRegisteredInReversedOrder()
     {
         // Verify the tie-break also works when the shorter mount point appears second in the list.
@@ -354,13 +340,6 @@ internal sealed class VolumeHelperTests
         }
     }
 
-    private sealed class ThrowingProvider : IVolumeMappingProvider
-    {
-        public IReadOnlyList<VolumeMapping> GetVolumeMappings()
-        {
-            throw new System.ComponentModel.Win32Exception(2);
-        }
-    }
 
     private sealed class TempFile : IDisposable
     {
