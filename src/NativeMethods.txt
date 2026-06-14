@@ -3,6 +3,7 @@ DeviceIoControl
 GetVolumePathNamesForVolumeNameW
 FindFirstVolume
 FindNextVolume
+FindVolumeClose
 QueryDosDevice
 METHOD_BUFFERED 
 METHOD_IN_DIRECT

@@ -22,6 +22,7 @@ internal partial class Tests
     }
 
     [Test]
+    [Explicit("Requires HidHide driver to be installed")]
     public void TestIsActive()
     {
         _hhControl.IsActive = true;
@@ -34,6 +35,7 @@ internal partial class Tests
     }
 
     [Test]
+    [Explicit("Requires HidHide driver to be installed")]
     public void TestIsAppListInverted()
     {
         _hhControl.IsAppListInverted = true;
@@ -46,6 +48,7 @@ internal partial class Tests
     }
 
     [Test]
+    [Explicit("Requires HidHide driver to be installed")]
     public void TestAppListValid()
     {
         _hhControl.ClearApplicationsList();
