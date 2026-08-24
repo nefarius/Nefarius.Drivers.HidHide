@@ -30,7 +30,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Nefarius.Utilities.DeviceManagement" Version="5.2.0" />
+        <PackageReference Include="Nefarius.Utilities.DeviceManagement" Version="6.0.0" />
         <PackageReference Include="Nefarius.Vicius.Abstractions" Version="1.8.0" />
         <PackageReference Include="System.Memory" Version="4.6.3" />
         <PackageReference Include="System.Net.Http.Json" Version="10.0.11" />
