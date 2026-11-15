@@ -5,6 +5,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      # Microsoft.Extensions.* packages are versioned in lockstep and must be bumped together
+      microsoft-extensions:
+        patterns:
+          - "Microsoft.Extensions.*"
+          - "System.Net.Http.Json"
 
   - package-ecosystem: "github-actions"
     directory: "/"
