@@ -33,7 +33,7 @@ services, your project also needs to add these NuGet packages:
 - `Microsoft.Extensions.Http`
 - `NJsonSchema`
 
-You can skip them for the "traditional" use of version 1 of the library. Register it like:
+You can skip them for the classic (non-DI) usage. Register it like:
 
 ```csharp
 builder.Services.AddHidHide();
