@@ -30,7 +30,7 @@ driver is only opened when necessary (when the properties are read from or the m
 If you plan to make use of Microsoft Dependency Injection (in ASP.NET Core, Worker Services and alike) and the online
 services, your project also needs to add these NuGet packages:
 
-- `Microsoft.Extensions.Http`
+- `Microsoft.Extensions.Http` (version 11.0.0 or newer)
 - `NJsonSchema`
 
 You can skip them for the classic (non-DI) usage. Register it like:
