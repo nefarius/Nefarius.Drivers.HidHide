@@ -12,13 +12,13 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Setup .Net SDK
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
           dotnet-version: 10.x
 
@@ -40,7 +40,7 @@ jobs:
 
       - name: Publish To Nuget
         run: |
-          dotnet nuget push bin/*.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json
-          dotnet nuget push bin/*.snupkg --skip-duplicate -s https://api.nuget.org/v3/index.json
+          dotnet nuget push bin/*.nupkg -s https://api.nuget.org/v3/index.json
+          dotnet nuget push bin/*.snupkg -s https://api.nuget.org/v3/index.json
         env:
           NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
