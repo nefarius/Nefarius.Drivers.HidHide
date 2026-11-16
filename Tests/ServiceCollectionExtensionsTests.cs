@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 
 using Nefarius.Drivers.HidHide;
+using Nefarius.Drivers.HidHide.Exceptions;
 
 namespace Tests;
 
