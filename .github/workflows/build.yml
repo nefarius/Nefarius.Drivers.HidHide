@@ -28,7 +28,6 @@ jobs:
 
       - name: Test Unit suite
         run: >
-          dotnet test Tests/Tests.csproj -c Release --no-build
           --settings Tests/ci.runsettings
           --filter "Category=Unit"
           --blame-hang-timeout 1m
