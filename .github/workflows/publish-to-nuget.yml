@@ -23,7 +23,8 @@ jobs:
         run: dotnet build -c Release
 
       - name: Test Unit suite
-        run: dotnet test Tests/Tests.csproj -c Release --settings Tests/ci.runsettings --filter "Category=Unit" --blame-hang-timeout 1m --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory TestResults
+        run: |
+          dotnet test Tests/Tests.csproj -c Release --settings Tests/ci.runsettings --filter "Category=Unit" --blame-hang-timeout 1m --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory TestResults
 
       - name: Upload test results
         if: always()
