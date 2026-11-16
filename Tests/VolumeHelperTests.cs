@@ -2,6 +2,8 @@ using Nefarius.Drivers.HidHide.Util;
 
 namespace Tests;
 
+[Category("Unit")]
+
 internal sealed class VolumeHelperTests
 {
     [Test]
