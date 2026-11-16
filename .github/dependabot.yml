@@ -1,8 +1,24 @@
 version: 2
 
 updates:
+  # Shipped library: Microsoft.Extensions.*, System.Net.Http.Json, System.Memory and
+  # System.Runtime.CompilerServices.Unsafe are deliberately pinned to the lowest versions
+  # that work, so consumers on older runtimes are never forced to upgrade. Do not bump them.
   - package-ecosystem: "nuget"
-    directory: "/"
+    directory: "/src"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "Microsoft.Extensions.*"
+      - dependency-name: "System.Net.Http.Json"
+      - dependency-name: "System.Memory"
+      - dependency-name: "System.Runtime.CompilerServices.Unsafe"
+
+  # Demo app and tests may track the latest versions
+  - package-ecosystem: "nuget"
+    directories:
+      - "/App"
+      - "/Tests"
     schedule:
       interval: "weekly"
     groups:
