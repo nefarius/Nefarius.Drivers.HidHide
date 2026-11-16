@@ -6,7 +6,41 @@ on:
       - v*
 
 jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup .Net SDK
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6
+        with:
+          dotnet-version: 10.x
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Test Unit suite
+        run: >
+          dotnet test Tests/Tests.csproj -c Release
+          --settings Tests/ci.runsettings
+          --filter "Category=Unit"
+          --blame-hang-timeout 1m
+          --logger "trx;LogFileName=test-results.trx"
+          --collect:"XPlat Code Coverage"
+          --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-results-windows
+          path: TestResults/
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       id-token: write

@@ -5,6 +5,8 @@ namespace Tests;
 internal partial class Tests
 {
     [Test]
+    [Category("Network")]
+    [Explicit("Talks to the live vicius API")]
     public async Task TestGetLatestReleaseAsync()
     {
         UpdateRelease release = await _hhProvider.GetLatestReleaseAsync();
@@ -13,14 +15,18 @@ internal partial class Tests
     }
 
     [Test]
+    [Category("Network")]
+    [Explicit("Talks to the live vicius API")]
     public async Task TestGetLatestVersionAsync()
     {
         Version version = await _hhProvider.GetLatestVersionAsync();
 
-        Assert.That(version, Is.EqualTo(Version.Parse("1.5.230.0")));
+        Assert.That(version, Is.GreaterThanOrEqualTo(new Version(1, 5, 230, 0)));
     }
 
     [Test]
+    [Category("Network")]
+    [Explicit("Talks to the live vicius API")]
     public async Task TestDownloadLatestReleaseAsync()
     {
         HttpResponseMessage response = await _hhProvider.DownloadLatestReleaseAsync();
