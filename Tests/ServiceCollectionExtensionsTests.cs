@@ -33,7 +33,7 @@ internal sealed class ServiceCollectionExtensionsTests
 
         HidHideSetupProvider setup = provider.GetRequiredService<HidHideSetupProvider>();
 
-        await setup.GetLatestReleaseAsync();
+        await Assert.ThrowsAsync<MissingReleasesException>(() => setup.GetLatestReleaseAsync());
 
         HttpRequestMessage request = handler.Requests.Single();
 
@@ -56,7 +56,7 @@ internal sealed class ServiceCollectionExtensionsTests
                 clientBuilder => clientBuilder.ConfigurePrimaryHttpMessageHandler(() => handler))
             .BuildServiceProvider();
 
-        await provider.GetRequiredService<HidHideSetupProvider>().GetLatestReleaseAsync();
+        await Assert.ThrowsAsync<MissingReleasesException>(() => provider.GetRequiredService<HidHideSetupProvider>().GetLatestReleaseAsync());
 
         Assert.That(handler.Requests.Single().Headers.GetValues("X-Vicius-OS-Architecture").Single(),
             Is.EqualTo("arm64"));

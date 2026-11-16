@@ -141,7 +141,10 @@ internal sealed class SetupProviderTests
         using CancellationTokenSource cts = new();
         cts.Cancel();
 
-        await Assert.ThrowsAsync<OperationCanceledException>(() => provider.GetLatestReleaseAsync(cts.Token));
+        UpdateResponseMissingException? ex =
+            await Assert.ThrowsAsync<UpdateResponseMissingException>(() => provider.GetLatestReleaseAsync(cts.Token));
+
+        Assert.That(ex!.InnerException, Is.InstanceOf<TaskCanceledException>());
     }
 
     private static HidHideSetupProvider CreateProvider(RecordingHandler handler) =>

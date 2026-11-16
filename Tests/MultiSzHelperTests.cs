@@ -59,8 +59,8 @@ internal sealed class MultiSzHelperTests
 
         try
         {
-            // "ab" + separator + final terminator, UTF-16
-            Assert.That(length, Is.EqualTo(3 * sizeof(char)));
+            // "ab" + separator + final terminator, UTF-16, plus the extra terminator the helper appends
+            Assert.That(length, Is.EqualTo(4 * sizeof(char)));
         }
         finally
         {
