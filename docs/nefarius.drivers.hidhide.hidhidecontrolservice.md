@@ -1,0 +1,467 @@
+# HidHideControlService
+
+Namespace: Nefarius.Drivers.HidHide
+
+Provides a managed wrapper for communicating with HidHide driver.
+
+```csharp
+public sealed class HidHideControlService : IHidHideControlService
+```
+
+Inheritance [Object](https://learn.microsoft.com/dotnet/api/system.object) → [HidHideControlService](./nefarius.drivers.hidhide.hidhidecontrolservice.md)<br>
+Implements [IHidHideControlService](./nefarius.drivers.hidhide.ihidhidecontrolservice.md)<br>
+Attributes [NullableContextAttribute](./system.runtime.compilerservices.nullablecontextattribute.md), [NullableAttribute](./system.runtime.compilerservices.nullableattribute.md)
+
+## Properties
+
+### <a id="properties-applicationpaths"/>**ApplicationPaths**
+
+Returns a list of currently allowed (or blocked, see [IHidHideControlService.IsAppListInverted](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#isapplistinverted)) application paths.
+
+```csharp
+public IReadOnlyList<String> ApplicationPaths { get; }
+```
+
+#### Property Value
+
+[IReadOnlyList](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)<[String](https://learn.microsoft.com/dotnet/api/system.string)><br>
+
+#### Exceptions
+
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
+
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
+Failed to locate the driver. Make sure HidHide is installed and not in a
+ faulty state.
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed. See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
+Buffer size exceeded the maximum allowed characters. It happens when the list
+ grew out of supported bounds.
+
+### <a id="properties-blockedinstanceids"/>**BlockedInstanceIds**
+
+Returns a list of currently blocked instance IDs.
+
+```csharp
+public IReadOnlyList<String> BlockedInstanceIds { get; }
+```
+
+#### Property Value
+
+[IReadOnlyList](https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1)<[String](https://learn.microsoft.com/dotnet/api/system.string)><br>
+
+#### Exceptions
+
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
+
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
+Failed to locate the driver. Make sure HidHide is installed and not in a
+ faulty state.
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed. See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
+Buffer size exceeded the maximum allowed characters. It happens when the list
+ grew out of supported bounds.
+
+### <a id="properties-deviceinterface"/>**DeviceInterface**
+
+Interface GUID to enumerate HidHide devices.
+
+```csharp
+public static Guid DeviceInterface { get; }
+```
+
+#### Property Value
+
+[Guid](https://learn.microsoft.com/dotnet/api/system.guid)<br>
+
+### <a id="properties-hardwareid"/>**HardwareId**
+
+Hardware ID of the root-enumerated software node the driver attaches to.
+
+```csharp
+public static string HardwareId { get; }
+```
+
+#### Property Value
+
+[String](https://learn.microsoft.com/dotnet/api/system.string)<br>
+
+### <a id="properties-isactive"/>**IsActive**
+
+Gets or sets whether global device hiding is currently active or not.
+
+```csharp
+public bool IsActive { get; set; }
+```
+
+#### Property Value
+
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
+
+#### Exceptions
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed. See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+### <a id="properties-isapplistinverted"/>**IsAppListInverted**
+
+Gets or sets whether the application list is inverted (from block all/allow specific to allow all/block specific).
+
+```csharp
+public bool IsAppListInverted { get; set; }
+```
+
+#### Property Value
+
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
+
+#### Exceptions
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed. See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+**Remarks:**
+
+The default behavior of the application list is to block all processes by default and only treat listed paths
+ as exempted.
+
+### <a id="properties-isdrivernodepresent"/>**IsDriverNodePresent**
+
+Gets whether the virtual root-enumerated software device the driver attaches to is present on the system.
+
+```csharp
+public bool IsDriverNodePresent { get; }
+```
+
+#### Property Value
+
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
+
+#### Exceptions
+
+ConfigManagerException<br>
+An unexpected enumeration error occurred.
+
+### <a id="properties-isinstalled"/>**IsInstalled**
+
+Gets whether the driver is present and operable.
+
+```csharp
+public bool IsInstalled { get; }
+```
+
+#### Property Value
+
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
+
+#### Exceptions
+
+[HidHideDetectionFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedetectionfailedexception.md)<br>
+Driver lookup has failed. See [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and
+ [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+### <a id="properties-isoperational"/>**IsOperational**
+
+Gets whether the driver node is present and operational (has its device interface exposed).
+
+```csharp
+public bool IsOperational { get; }
+```
+
+#### Property Value
+
+[Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
+
+#### Exceptions
+
+[HidHideDetectionFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedetectionfailedexception.md)<br>
+Driver lookup has failed. See [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and
+ [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+ConfigManagerException<br>
+An unexpected enumeration error occurred.
+
+### <a id="properties-localdriverversion"/>**LocalDriverVersion**
+
+Gets the local driver binary version.
+
+```csharp
+public Version LocalDriverVersion { get; }
+```
+
+#### Property Value
+
+[Version](https://learn.microsoft.com/dotnet/api/system.version)<br>
+
+#### Exceptions
+
+ConfigManagerException<br>
+An unexpected enumeration error occurred.
+
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
+Failed to locate the driver. Make sure HidHide is installed and not in a
+ faulty state.
+
+[HidHideMultipleDeviceNodesFoundException](./nefarius.drivers.hidhide.exceptions.hidhidemultipledevicenodesfoundexception.md)<br>
+More than one software device node was found. This can lead
+ to unexpected behavior. Please uninstall the driver and reinstall it.
+
+## Constructors
+
+### <a id="constructors-.ctor"/>**HidHideControlService(ILoggerFactory)**
+
+Creates a new instance of [HidHideControlService](./nefarius.drivers.hidhide.hidhidecontrolservice.md) that is DI-aware.
+
+```csharp
+public HidHideControlService(ILoggerFactory loggerFactory)
+```
+
+#### Parameters
+
+`loggerFactory` [ILoggerFactory](https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory)<br>
+Injects a logging factory.
+
+### <a id="constructors-.ctor"/>**HidHideControlService()**
+
+Creates a new instance of [HidHideControlService](./nefarius.drivers.hidhide.hidhidecontrolservice.md) that is not DI-aware.
+
+```csharp
+public HidHideControlService()
+```
+
+**Remarks:**
+
+If the caller uses a dependency injection framework, do not instantiate this class directly. Use
+ [ServiceCollectionExtensions.AddHidHide(IServiceCollection, Action&lt;HidHideServiceOptions&gt;, Action&lt;IHttpClientBuilder&gt;)](./nefarius.drivers.hidhide.servicecollectionextensions.md#addhidhideiservicecollection-actionhidhideserviceoptions-actionihttpclientbuilder) instead.
+
+## Methods
+
+### <a id="methods-addapplicationpath"/>**AddApplicationPath(String, Boolean)**
+
+Submit a new application to allow (or deny if the inverse flag is set).
+
+```csharp
+public void AddApplicationPath(string path, bool throwIfInvalid)
+```
+
+#### Parameters
+
+`path` [String](https://learn.microsoft.com/dotnet/api/system.string)<br>
+The absolute application path to allow.
+
+`throwIfInvalid` [Boolean](https://learn.microsoft.com/dotnet/api/system.boolean)<br>
+Throws exception if an invalid (nonexistent) file path is supplied.
+
+#### Exceptions
+
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
+
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
+Failed to locate the driver.
+ Make sure HidHide is installed and not in a
+ faulty state.
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed.
+ See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
+Buffer size exceeded the maximum allowed characters.
+ It happens when the list
+ grew out of supported bounds.
+
+[FileNotFoundException](https://learn.microsoft.com/dotnet/api/system.io.filenotfoundexception)<br>
+`throwIfInvalid` was set and the supplied file
+ `path` wasn't found.
+
+**Remarks:**
+
+Use the common local path notation (e.g. "C:\Windows\System32\rundll32.exe").
+
+### <a id="methods-addblockedinstanceid"/>**AddBlockedInstanceId(String)**
+
+Submit a new instance for blocking.
+
+```csharp
+public void AddBlockedInstanceId(string instanceId)
+```
+
+#### Parameters
+
+`instanceId` [String](https://learn.microsoft.com/dotnet/api/system.string)<br>
+The Instance ID to block.
+
+#### Exceptions
+
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
+
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
+Failed to locate the driver. Make sure HidHide is installed and not in a
+ faulty state.
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed. See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
+Buffer size exceeded the maximum allowed characters. It happens when the list
+ grew out of supported bounds.
+
+**Remarks:**
+
+To get the instance ID from e.g. a symbolic link (device path) you can use this companion library:
+ https://github.com/nefarius/Nefarius.Utilities.DeviceManagement
+
+### <a id="methods-clearapplicationslist"/>**ClearApplicationsList()**
+
+Empties the application list. Useful if [IHidHideControlService.AddApplicationPath(String, Boolean)](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#addapplicationpathstring-boolean) or [IHidHideControlService.ApplicationPaths](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#applicationpaths) throw
+ exceptions due to nonexistent entries.
+
+```csharp
+public void ClearApplicationsList()
+```
+
+#### Exceptions
+
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
+Failed to open a handle to the driver. Make sure no other process is
+ using the API at the same time.
+
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
+Failed to locate the driver. Make sure HidHide is installed and not in a
+ faulty state.
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed. See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
+Buffer size exceeded the maximum allowed characters. It happens when the list
+ grew out of supported bounds.
+
+**Remarks:**
+
+Be very conservative in using this call, you might accidentally undo settings different apps have put in
+ place.
+
+### <a id="methods-clearblockedinstanceslist"/>**ClearBlockedInstancesList()**
+
+Empties the device instances list. Useful if [IHidHideControlService.AddBlockedInstanceId(String)](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#addblockedinstanceidstring) or
+ [IHidHideControlService.BlockedInstanceIds](./nefarius.drivers.hidhide.ihidhidecontrolservice.md#blockedinstanceids) throw exceptions due to nonexistent entries.
+
+```csharp
+public void ClearBlockedInstancesList()
+```
+
+#### Exceptions
+
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
+
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
+Failed to locate the driver. Make sure HidHide is installed and not in a
+ faulty state.
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed. See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
+Buffer size exceeded the maximum allowed characters. It happens when the list
+ grew out of supported bounds.
+
+**Remarks:**
+
+Be very conservative in using this call, you might accidentally undo settings different apps have put in
+ place.
+
+### <a id="methods-removeapplicationpath"/>**RemoveApplicationPath(String)**
+
+Revokes an applications exemption.
+
+```csharp
+public void RemoveApplicationPath(string path)
+```
+
+#### Parameters
+
+`path` [String](https://learn.microsoft.com/dotnet/api/system.string)<br>
+The absolute application path to revoke.
+
+#### Exceptions
+
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
+Failed to open a handle to the driver. Make sure no other process is
+ using the API at the same time.
+
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
+Failed to locate the driver. Make sure HidHide is installed and not in a
+ faulty state.
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed. See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
+Buffer size exceeded the maximum allowed characters. It happens when the list
+ grew out of supported bounds.
+
+**Remarks:**
+
+Use the common local path notation (e.g. "C:\Windows\System32\rundll32.exe").
+
+### <a id="methods-removeblockedinstanceid"/>**RemoveBlockedInstanceId(String)**
+
+Remove an instance from being blocked.
+
+```csharp
+public void RemoveBlockedInstanceId(string instanceId)
+```
+
+#### Parameters
+
+`instanceId` [String](https://learn.microsoft.com/dotnet/api/system.string)<br>
+The Instance ID to unblock.
+
+#### Exceptions
+
+[HidHideDriverAccessFailedException](./nefarius.drivers.hidhide.exceptions.hidhidedriveraccessfailedexception.md)<br>
+Failed to open a handle to the driver.
+ Make sure no other process is using the API at the same time.
+
+[HidHideDriverNotFoundException](./nefarius.drivers.hidhide.exceptions.hidhidedrivernotfoundexception.md)<br>
+Failed to locate the driver. Make sure HidHide is installed and not in a
+ faulty state.
+
+[HidHideRequestFailedException](./nefarius.drivers.hidhide.exceptions.hidhiderequestfailedexception.md)<br>
+Driver communication has failed. See
+ [HidHideException.NativeErrorCode](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrorcode) and [HidHideException.NativeErrorMessage](./nefarius.drivers.hidhide.exceptions.hidhideexception.md#nativeerrormessage) for details.
+
+[HidHideBufferOverflowException](./nefarius.drivers.hidhide.exceptions.hidhidebufferoverflowexception.md)<br>
+Buffer size exceeded the maximum allowed characters. It happens when the list
+ grew out of supported bounds.
+
+**Remarks:**
+
+To get the instance ID from e.g. a symbolic link (device path) you can use this companion library:
+ https://github.com/nefarius/Nefarius.Utilities.DeviceManagement
